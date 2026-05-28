@@ -849,35 +849,129 @@ h3 {
   }
 
   /* ── About ─────────────────────────────────────────── */
+  #about {
+    padding: 64px 24px !important;
+  }
+
+  /* Single column — heading first, body below */
   #about .mx-auto {
-    gap: 48px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 36px !important;
+    grid-template-columns: unset !important;
   }
 
   #about h2 {
-    font-size: clamp(36px, 9vw, 64px) !important;
+    font-size: clamp(34px, 9vw, 56px) !important;
+    line-height: 1 !important;
   }
 
-  /* Stats in a 3-col row */
+  /* Gold accent line below heading */
+  #about .h-px.w-\[120px\] {
+    margin-top: 20px;
+  }
+
+  #about [data-about-body] {
+    font-size: 15px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* Stats row — 3 equal columns */
   #about .grid {
+    display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 16px;
+    gap: 0 !important;
+  }
+
+  #about .grid > div {
+    padding: 20px 0;
+    border-right: 1px solid var(--divider);
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  #about .grid > div:first-child {
+    padding-left: 0;
+  }
+
+  #about .grid > div:last-child {
+    border-right: none;
+  }
+
+  #about .font-display.text-5xl {
+    font-size: 32px !important;
   }
 
   /* ── Process ───────────────────────────────────────── */
+  #process {
+    padding: 64px 24px !important;
+  }
+
   #process h2 {
-    font-size: clamp(36px, 9vw, 64px) !important;
+    font-size: clamp(34px, 9vw, 56px) !important;
+    line-height: 1 !important;
   }
 
+  #process > div > p {
+    font-size: 14px !important;
+    margin-top: 16px !important;
+  }
+
+  /* Steps as clean numbered list rows */
   #process .grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin-top: 40px !important;
   }
 
-  #process .soft-card {
-    padding: 28px 24px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+  #process [data-process-card] {
+    display: grid !important;
+    grid-template-columns: 44px 1fr !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 20px !important;
+    padding: 24px 0 !important;
+    background: none !important;
+    border: none !important;
+    border-bottom: 1px solid var(--divider) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #process [data-process-card]:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Number top-left */
+  #process [data-process-card] > span {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 11px !important;
+    color: var(--text-muted) !important;
+    padding-top: 3px;
+  }
+
+  /* Icon — hide on mobile for clean look */
+  #process [data-process-card] > svg {
+    display: none !important;
+  }
+
+  /* Title */
+  #process [data-process-card] h3 {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0 !important;
+    font-size: 20px !important;
+    color: var(--text-primary);
+  }
+
+  /* Body text */
+  #process [data-process-card] p {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 6px !important;
+    font-size: 13px !important;
+    color: var(--text-secondary);
   }
 
   /* ── Services — mobile cards ───────────────────────── */
