@@ -851,24 +851,19 @@ h3 {
   /* ── About ─────────────────────────────────────────── */
   #about {
     padding: 64px 24px !important;
+    overflow: hidden !important;
   }
 
-  /* Single column — heading first, body below */
-  #about .mx-auto {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 36px !important;
-    grid-template-columns: unset !important;
+  /* Force single column, remove the lg:grid-cols-2 */
+  #about .grid.lg\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    max-width: 100% !important;
   }
 
   #about h2 {
     font-size: clamp(34px, 9vw, 56px) !important;
-    line-height: 1 !important;
-  }
-
-  /* Gold accent line below heading */
-  #about .h-px.w-\[120px\] {
-    margin-top: 20px;
+    line-height: 1.0 !important;
   }
 
   #about [data-about-body] {
@@ -876,30 +871,29 @@ h3 {
     line-height: 1.8 !important;
   }
 
-  /* Stats row — 3 equal columns */
-  #about .grid {
+  /* Stats — 3 equal columns with dividers */
+  #about .grid.sm\:grid-cols-3 {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 0 !important;
   }
 
-  #about .grid > div {
-    padding: 20px 0;
+  #about .grid.sm\:grid-cols-3 > div {
+    padding: 0 14px;
     border-right: 1px solid var(--divider);
-    padding-right: 16px;
-    padding-left: 16px;
   }
 
-  #about .grid > div:first-child {
+  #about .grid.sm\:grid-cols-3 > div:first-child {
     padding-left: 0;
   }
 
-  #about .grid > div:last-child {
+  #about .grid.sm\:grid-cols-3 > div:last-child {
     border-right: none;
+    padding-right: 0;
   }
 
   #about .font-display.text-5xl {
-    font-size: 32px !important;
+    font-size: 30px !important;
   }
 
   /* ── Process ───────────────────────────────────────── */
