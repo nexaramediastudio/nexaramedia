@@ -823,11 +823,10 @@ h3 {
     max-width: 200px;
   }
 
-  /* Fill the empty space with the headline — height-driven size */
   .hero-line-1,
   .hero-line-2,
   .hero-line-3 {
-    font-size: calc((100svh - 310px) / 3.1) !important;
+    font-size: clamp(56px, calc((100svh - 310px) / 4.8), 120px) !important;
   }
 
   .hero-divider {
@@ -1073,7 +1072,7 @@ h3 {
   .hero-line-1,
   .hero-line-2,
   .hero-line-3 {
-    font-size: calc((100svh - 290px) / 3.1) !important;
+    font-size: clamp(52px, calc((100svh - 290px) / 4.8), 110px) !important;
   }
 
   .mobile-menu {
