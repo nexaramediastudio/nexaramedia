@@ -4,121 +4,101 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
+import { gsap } from "@/lib/gsap";
 
 const NAV_LINKS = [
-  { href: "#about",    id: "about",    label: "About" },
-  { href: "#work",     id: "work",     label: "Work" },
-  { href: "#services", id: "services", label: "Services" },
-  { href: "#contact",  id: "contact",  label: "Contact" },
+  { id: "work", label: "Work" },
+  { id: "services", label: "Services" },
+  { id: "vs", label: "About" },
 ];
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const lenis = useLenisInstance();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    gsap.fromTo(
+      ".site-nav",
+      { opacity: 0, y: -12, xPercent: -50 },
+      {
+        opacity: 1,
+        y: 0,
+        xPercent: -50,
+        duration: 0.5,
+        ease: "power2.out",
+        delay: 0.8,
+      }
+    );
   }, []);
 
-  // lock body scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
 
-  const handleNav = (e: React.MouseEvent, id: string) => {
+  const go = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     setMenuOpen(false);
-    setTimeout(() => scrollToSection(id, lenis), 10);
+    scrollToSection(id, lenis);
   };
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
-          scrolled ? "border-[rgba(201,169,110,0.15)]" : "border-[var(--border)]"
-        }`}
-        style={{ background: "rgba(8,8,8,0.92)", backdropFilter: "blur(20px)" }}
-      >
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10">
-          {/* Logo */}
-          <Link
-            href="#hero"
-            onClick={(e) => handleNav(e, "hero")}
-            className="font-sans text-sm font-medium tracking-[0.3em] text-text-primary"
-            data-cursor="link"
-          >
-            NEXARA
-          </Link>
+      <nav className="site-nav">
+        <Link href="#hero" onClick={(e) => go(e, "hero")} className="site-nav-logo">
+          Nexara
+        </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.id)}
-                className="font-sans text-[13px] font-light text-text-secondary transition-colors duration-300 hover:text-text-primary"
-                data-cursor="link"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Desktop CTA */}
-          <Link
-            href="#contact"
-            onClick={(e) => handleNav(e, "contact")}
-            className="hidden border border-[var(--border-gold)] px-5 py-2 font-sans text-xs font-medium tracking-[0.12em] text-gold transition-all duration-300 hover:bg-[var(--gold-dim)] md:inline-flex"
-            style={{ borderRadius: 4 }}
-            data-cursor="link"
-          >
-            Start a Project
-          </Link>
-
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMenuOpen((v) => !v)}
-            className="mobile-hamburger md:hidden"
-          >
-            <span className={`ham-line ${menuOpen ? "rotate-45 translate-y-[7px]" : ""}`} />
-            <span className={`ham-line ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`ham-line ${menuOpen ? "-rotate-45 -translate-y-[7px]" : ""}`} />
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile fullscreen menu */}
-      <div className={`mobile-menu ${menuOpen ? "mobile-menu--open" : ""}`}>
-        <nav className="mobile-menu-inner">
-          {NAV_LINKS.map((link, i) => (
+        <div className="site-nav-links">
+          {NAV_LINKS.map((link) => (
             <Link
-              key={link.href}
-              href={link.href}
-              onClick={(e) => handleNav(e, link.id)}
-              className="mobile-menu-link"
-              style={{ transitionDelay: menuOpen ? `${i * 60}ms` : "0ms" }}
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => go(e, link.id)}
+              className="site-nav-link"
             >
-              <span className="mobile-menu-num">0{i + 1}</span>
               {link.label}
             </Link>
           ))}
+        </div>
 
+        <Link href="#cta" onClick={(e) => go(e, "cta")} className="site-nav-cta hidden sm:inline-flex">
+          Start a Project
+        </Link>
+
+        <button
+          type="button"
+          className="site-nav-menu-btn md:hidden"
+          aria-label="Menu"
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </nav>
+
+      <div className={`mobile-nav-overlay ${menuOpen ? "is-open" : ""}`}>
+        {NAV_LINKS.map((link) => (
           <Link
-            href="#contact"
-            onClick={(e) => handleNav(e, "contact")}
-            className="mobile-menu-cta"
-            style={{ transitionDelay: menuOpen ? "280ms" : "0ms" }}
+            key={link.id}
+            href={`#${link.id}`}
+            onClick={(e) => go(e, link.id)}
+            className="mobile-nav-link"
           >
-            Start a Project →
+            {link.label}
           </Link>
-        </nav>
+        ))}
+        <Link
+          href="#cta"
+          onClick={(e) => go(e, "cta")}
+          className="mobile-nav-link"
+          style={{ color: "var(--color-accent)", border: "none", marginTop: 16 }}
+        >
+          Start a Project →
+        </Link>
       </div>
     </>
   );

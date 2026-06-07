@@ -1,13 +1,11 @@
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/sections/HeroSection";
-import { AboutSection } from "@/sections/AboutSection";
-import { ProcessSection } from "@/sections/ProcessSection";
 import { ServicesSection } from "@/sections/ServicesSection";
+import { VSSection } from "@/sections/VSSection";
+import { ProcessSection } from "@/sections/ProcessSection";
 import { WorkSection } from "@/sections/WorkSection";
 import { TestimonialsSection } from "@/sections/TestimonialsSection";
-import { FAQSection } from "@/sections/FAQSection";
-import { ContactSection } from "@/sections/ContactSection";
+import { CTASection } from "@/sections/CTASection";
 
 export default function Home() {
   return (
@@ -15,15 +13,13 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
-        <AboutSection />
-        <ProcessSection />
         <ServicesSection />
+        <VSSection />
+        <ProcessSection />
         <WorkSection />
         <TestimonialsSection />
-        <FAQSection />
-        <ContactSection />
+        <CTASection />
       </main>
-      <Footer />
     </>
   );
 }

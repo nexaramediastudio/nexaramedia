@@ -1,183 +1,110 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import Link from "next/link";
+import { MacWindow } from "@/components/ui/MacWindow";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
+import { scrollToSection } from "@/lib/scrollTo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 const SERVICES = [
   {
     num: "01",
-    name: "AI Automation",
-    description:
-      "Intelligent systems that work while you sleep. We build custom AI workflows, automation pipelines, and smart tools that eliminate repetitive work and give your team back their time.",
-    items: [
-      "Custom AI workflow design",
-      "Business process automation",
-      "AI-powered dashboards",
-      "Chatbot & assistant integration",
-      "Data pipeline automation",
-    ],
+    name: "Social Media Management",
+    icon: "□",
+    desc: "Strategy, content, and community management that keeps your brand visible and growing every day.",
+    scope: "Retainer",
+    output: "Monthly calendar",
+    deliverables: ["Content strategy", "Post design", "Community mgmt", "Analytics reports", "Trend monitoring"],
+    preview: ["▬▬▬▬", "▬▬▬", "▬▬▬▬▬"],
   },
   {
     num: "02",
-    name: "Business Systems",
-    description:
-      "Custom infrastructure built for scale. We design and develop the internal tools, dashboards, and operational systems that growing businesses actually need.",
-    items: [
-      "Custom internal dashboards",
-      "CRM & operational systems",
-      "Business intelligence tools",
-      "Client portal development",
-      "Workflow management systems",
-    ],
+    name: "Video Production",
+    icon: "<>",
+    desc: "From concept to final cut — brand films, social reels, and product videos that stop the scroll.",
+    scope: "Project",
+    output: "Final video assets",
+    deliverables: ["Concept & script", "Filming / motion", "Editing & grade", "Social cuts", "Raw files"],
+    preview: ["▶ ▬▬▬", "▬▬▬▬▬", "▬▬"],
   },
   {
     num: "03",
     name: "Web Development",
-    description:
-      "Experiences that convert and captivate. From marketing sites to complex web applications — built fast, built right, built to last.",
-    items: [
-      "Marketing websites",
-      "Web application development",
-      "E-commerce builds",
-      "Landing page systems",
-      "CMS & headless builds",
-    ],
+    icon: "◇",
+    desc: "Fast, beautiful websites and web apps built to convert visitors into customers.",
+    scope: "Project",
+    output: "Live website",
+    deliverables: ["UI/UX design", "Development", "CMS setup", "SEO basics", "Launch support"],
+    preview: ["▬▬ ▬", "▬▬▬▬▬", "▬▬ ▬▬"],
   },
   {
     num: "04",
-    name: "Branding",
-    description:
-      "Identity systems built to be remembered. Logo, visual language, brand guidelines, and everything your brand needs to look like it belongs at the top.",
-    items: [
-      "Logo & identity design",
-      "Brand guidelines",
-      "Visual language systems",
-      "Brand collateral",
-      "Rebranding & refresh",
-    ],
+    name: "AI Automation",
+    icon: "□",
+    desc: "Custom AI workflows and automations that eliminate repetitive work and save your team hours.",
+    scope: "Retainer / Project",
+    output: "Automated systems",
+    deliverables: ["Workflow audit", "AI integration", "Dashboard build", "Training", "Maintenance"],
+    preview: ["⚡ ▬▬", "▬▬▬", "▬▬ ⚡"],
   },
   {
     num: "05",
-    name: "Creative Media",
-    description:
-      "Visual storytelling at the highest level. Photography direction, video production, motion graphics, and content that actually stops the scroll.",
-    items: [
-      "Video production",
-      "Motion graphics & animation",
-      "Photography direction",
-      "Social media content",
-      "Brand storytelling",
-    ],
+    name: "Branding & Identity",
+    icon: "□",
+    desc: "Logo, visual language, and brand guidelines that make your business impossible to forget.",
+    scope: "Project",
+    output: "Brand kit",
+    deliverables: ["Logo design", "Color & type", "Brand guidelines", "Collateral", "Social templates"],
+    preview: ["◆ ▬▬", "▬▬▬▬", "▬ ◆"],
   },
   {
     num: "06",
-    name: "Digital Experiences",
-    description:
-      "Immersive interactions that define the brand. When a standard website is not enough — we build interactive experiences people remember.",
-    items: [
-      "Interactive web experiences",
-      "Product configurators",
-      "Immersive microsites",
-      "3D & WebGL experiences",
-      "Campaign landing experiences",
-    ],
+    name: "Ad Campaigns",
+    icon: "□",
+    desc: "Paid social and search campaigns built for measurable ROI, not vanity metrics.",
+    scope: "Retainer",
+    output: "Campaign reports",
+    deliverables: ["Audience research", "Ad creative", "Campaign setup", "A/B testing", "Monthly reports"],
+    preview: ["$ ▬▬", "▬▬▬▬", "▬▬ $"],
   },
   {
     num: "07",
-    name: "Business Solutions",
-    description:
-      "Strategic thinking. Measurable results. We sit down with you, understand the business deeply, and figure out exactly what to build and why.",
-    items: [
-      "Digital strategy consulting",
-      "Tech stack advisory",
-      "Growth system design",
-      "Competitor analysis",
-      "Roadmap planning",
-    ],
+    name: "SEO",
+    icon: "□",
+    desc: "Technical and content SEO that gets your brand found by the people actively searching for you.",
+    scope: "Retainer",
+    output: "Ranking growth",
+    deliverables: ["Site audit", "Keyword strategy", "On-page SEO", "Content plan", "Monthly tracking"],
+    preview: ["↑ ▬▬", "▬▬▬", "▬▬ ↑"],
   },
 ];
-
-function ServiceCard({
-  service,
-  showScrollHint,
-}: {
-  service: (typeof SERVICES)[0];
-  showScrollHint: boolean;
-}) {
-  return (
-    <div className="service-stack-card-inner">
-      <header className="service-card-header">
-        <span className="service-card-num font-display font-light text-gold">
-          {service.num}
-        </span>
-        <h3 className="service-card-title font-display font-medium text-text-primary">
-          {service.name}
-        </h3>
-      </header>
-
-      <p className="service-card-desc font-sans font-light text-text-secondary">
-        {service.description}
-      </p>
-
-      <ul className="service-card-list">
-        {service.items.map((item, idx) => (
-          <li
-            key={item}
-            className="font-sans font-light text-text-muted"
-          >
-            <span className="text-gold">
-              /{String(idx + 1).padStart(2, "0")}
-            </span>{" "}
-            {item}
-          </li>
-        ))}
-      </ul>
-
-      {showScrollHint && (
-        <div className="service-card-footer">
-          <span className="service-scroll-pill">
-            Scroll
-            <ChevronDown size={14} strokeWidth={1.5} />
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function ServicesSection() {
   const lenis = useLenisInstance();
   const [active, setActive] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
-  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const activeRef = useRef(0);
+
+  const service = SERVICES[active];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 1024px)", () => {
+      mm.add("(min-width: 900px)", () => {
         const pin = pinRef.current;
         if (!pin) return;
 
-        const inner = pin.querySelector<HTMLElement>(".services-pin-inner");
-        const scrollDistance =
-          window.innerHeight * 0.45 * (SERVICES.length - 1);
+        const scrollDistance = window.innerHeight * 0.35 * (SERVICES.length - 1);
 
-        // Main pin + card switching
-        const st = ScrollTrigger.create({
+        ScrollTrigger.create({
           trigger: pin,
           start: "top top",
           end: `+=${scrollDistance}`,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
-          invalidateOnRefresh: true,
           onUpdate: (self) => {
             const idx = Math.min(
               SERVICES.length - 1,
@@ -188,158 +115,136 @@ export function ServicesSection() {
               setActive(idx);
             }
           },
-          // Reset when re-entering from below
-          onEnterBack: () => {
-            if (inner) gsap.to(inner, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
-          },
         });
 
-        // Smooth exit: fade + lift content in the last ~18% of pin travel
-        if (inner) {
-          gsap.to(inner, {
-            opacity: 0,
-            y: -60,
-            ease: "power2.in",
-            scrollTrigger: {
-              trigger: pin,
-              start: () => `top+=${scrollDistance * 0.82} top`,
-              end: () => `top+=${scrollDistance} top`,
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
+        gsap.from(".services-window", {
+          scale: 0.88,
+          opacity: 0,
+          duration: 0.8,
+          ease: "back.out(1.4)",
+          scrollTrigger: { trigger: "#services", start: "top 80%" },
+        });
 
-        scrollTriggerRef.current = st;
-        requestAnimationFrame(() => ScrollTrigger.refresh());
-
-        return () => {
-          st.kill();
-          scrollTriggerRef.current = null;
-          if (inner) gsap.set(inner, { clearProps: "opacity,y" });
-        };
+        gsap.to(".services-window", {
+          x: "-100vw",
+          opacity: 0,
+          ease: "power3.in",
+          scrollTrigger: {
+            trigger: "#services",
+            start: "bottom 60%",
+            end: "bottom 20%",
+            scrub: true,
+          },
+        });
       });
-
-      mm.add("(max-width: 1023px)", () => {
-        gsap.utils
-          .toArray<HTMLElement>("[data-service-mobile]", sectionRef.current)
-          .forEach((panel) => {
-            gsap.fromTo(
-              panel,
-              { opacity: 0, y: 32 },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.7,
-                ease: "power2.out",
-                scrollTrigger: {
-                  trigger: panel,
-                  start: "top 88%",
-                  toggleActions: "play none none none",
-                },
-              }
-            );
-          });
-      });
-    }, sectionRef);
+    });
 
     return () => ctx.revert();
   }, []);
 
-  const jumpToService = (index: number) => {
-    const st = scrollTriggerRef.current;
-    if (!st) {
-      setActive(index);
-      return;
-    }
-    const progress =
-      SERVICES.length <= 1 ? 0 : index / (SERVICES.length - 1);
-    const y = st.start + (st.end - st.start) * progress;
-    if (lenis) {
-      lenis.scrollTo(y, { duration: 1.2 });
-    } else {
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
-
-  const current = SERVICES[active];
-
   return (
-    <section
-      id="services"
-      ref={sectionRef}
-      className="services-section bg-bg-secondary !py-0"
-    >
-      {/* Mobile intro (only shown on mobile) */}
-      <div className="mx-auto max-w-[1180px] px-6 pt-16 pb-4 lg:hidden">
-        <SectionLabel number="03" title="SERVICES" className="mb-6" />
-        <h2 className="services-heading font-display font-light leading-[0.95] tracking-[-0.03em] text-text-primary">
-          <span className="block">What we</span>
-          <span className="block">build for you.</span>
-        </h2>
-      </div>
+    <section id="services">
+      <p className="section-label">What We Do / 02</p>
 
-      {/* Desktop — full viewport pin */}
-      <div ref={pinRef} className="services-pin-viewport hidden lg:block">
-        <div className="services-pin-inner">
+      <div ref={pinRef} className="services-window-wrap">
+        <span className="services-pill services-pill-tap">tap a layer</span>
+        <span className="services-pill services-pill-selected">nexara · selected</span>
 
-          {/* Left column: label + heading + number nav */}
-          <div className="services-left-col">
-            <SectionLabel number="03" title="SERVICES" className="mb-4" />
-            <h2 className="services-heading font-display font-light tracking-[-0.03em] text-text-primary">
-              <span className="block">What we</span>
-              <span className="block">build for you.</span>
-            </h2>
-            <nav className="services-nav" aria-label="Service navigation">
-              {SERVICES.map((service, i) => (
+        <MacWindow title="nexara-services.fig" className="services-window">
+          <div className="services-mobile-tabs">
+            {SERVICES.map((s, i) => (
+              <button
+                key={s.num}
+                type="button"
+                className={`services-layer-item ${active === i ? "is-active" : ""}`}
+                onClick={() => setActive(i)}
+                style={{ flexShrink: 0 }}
+              >
+                {s.name.slice(0, 12)}…
+              </button>
+            ))}
+          </div>
+
+          <div className="services-panels">
+            <div className="services-layers">
+              <p className="services-layers-label">Layers</p>
+              <input className="services-search" placeholder="Search layers…" readOnly />
+              <p className="services-layers-label" style={{ marginTop: 12 }}>
+                ▸ PAGE 1 · SERVICES
+              </p>
+              {SERVICES.map((s, i) => (
                 <button
-                  key={service.num}
+                  key={s.num}
                   type="button"
-                  onClick={() => jumpToService(i)}
-                  className={`services-nav-btn ${active === i ? "is-active" : ""}`}
+                  className={`services-layer-item ${active === i ? "is-active" : ""}`}
+                  onClick={() => setActive(i)}
                 >
-                  {service.num}
+                  <span>
+                    {s.icon} {s.name}
+                  </span>
+                  <span>{s.num}</span>
                 </button>
               ))}
-            </nav>
-          </div>
+              <p style={{ fontSize: 11, color: "#555", marginTop: 16 }}>+ add layer</p>
+            </div>
 
-          {/* Right column: stacked card */}
-          <div className="services-card-wrap">
-            <div className="service-stack-ghost service-stack-ghost-2" aria-hidden />
-            <div className="service-stack-ghost service-stack-ghost-1" aria-hidden />
-            <div className="service-stack-stage">
-              <AnimatePresence mode="wait">
-                <motion.article
-                  key={current.num}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -18 }}
-                  transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
-                  className="w-full"
-                >
-                  <ServiceCard
-                    service={current}
-                    showScrollHint={active < SERVICES.length - 1}
+            <div className="services-canvas">
+              <div className="services-preview-card">
+                {service.preview.map((line, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      height: i === 1 ? 12 : 8,
+                      background: i === 0 ? "var(--color-accent)" : "#e8e8e8",
+                      borderRadius: 4,
+                      marginBottom: 10,
+                      width: line.length > 6 ? "100%" : "70%",
+                      opacity: 0.7 + i * 0.1,
+                    }}
                   />
-                </motion.article>
-              </AnimatePresence>
+                ))}
+                <p style={{ fontSize: 11, color: "#999", marginTop: 12 }}>{service.name}</p>
+              </div>
+            </div>
+
+            <div className="services-properties">
+              <p style={{ fontSize: 10, color: "#999", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                Properties
+              </p>
+              <h3 className="services-prop-name">{service.name}</h3>
+              <p className="services-prop-desc">{service.desc}</p>
+
+              <div className="services-tag-row">
+                <div className="services-tag-box">
+                  <p className="services-tag-label">Scope</p>
+                  <p className="services-tag-value">{service.scope}</p>
+                </div>
+                <div className="services-tag-box">
+                  <p className="services-tag-label">Output</p>
+                  <p className="services-tag-value">{service.output}</p>
+                </div>
+              </div>
+
+              <p className="services-deliverables-label">Deliverables</p>
+              {service.deliverables.map((d, i) => (
+                <p key={d} className="services-deliverable">
+                  /{String(i + 1).padStart(2, "0")} {d}
+                </p>
+              ))}
+
+              <Link
+                href="#cta"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("cta", lenis);
+                }}
+                className="services-start-btn"
+              >
+                Start a project
+              </Link>
             </div>
           </div>
-
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-[1180px] space-y-0 border-t border-[var(--divider)] px-6 md:px-10 lg:hidden">
-        {SERVICES.map((service) => (
-          <article
-            key={`m-${service.num}`}
-            data-service-mobile
-            className="border-b border-[var(--divider)] py-10"
-          >
-            <ServiceCard service={service} showScrollHint={false} />
-          </article>
-        ))}
+        </MacWindow>
       </div>
     </section>
   );

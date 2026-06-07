@@ -1,108 +1,154 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { MessageCircle, FileText, Wrench, Rocket } from "lucide-react";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { gsap } from "@/lib/gsap";
-import { EASE_SOFT } from "@/lib/animations";
+import { useEffect, useRef, useState } from "react";
+import { MacWindow } from "@/components/ui/MacWindow";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 const STEPS = [
   {
-    num: "01",
-    icon: MessageCircle,
-    title: "Connect",
-    body: "Book a free 30-minute discovery call. Tell us about your brand, your goals, and what you need. We'll tell you exactly how we can help.",
+    day: 1,
+    label: "Brief Sent",
+    color: "active-red",
+    messages: [
+      { from: "you", text: "Hey! Here's our brief. Super excited to get started." },
+      { from: "nexara", text: "Got it. Love the direction. Kicking off tomorrow morning. 🚀" },
+    ],
   },
   {
-    num: "02",
-    icon: FileText,
-    title: "Brief",
-    body: "Share your project brief with us. No templates, no forms. Just a conversation about what you want to build.",
+    day: 2,
+    label: "First Draft",
+    color: "active-blue",
+    messages: [
+      { from: "nexara", text: "First draft is live. Check the link and let us know." },
+      { from: "you", text: "🔥🔥🔥 this is way better than expected" },
+    ],
   },
   {
-    num: "03",
-    icon: Wrench,
-    title: "Build",
-    body: "We get to work. You'll receive updates, previews, and can request revisions at any step. We don't disappear.",
+    day: 3,
+    label: "Revisions",
+    color: "active-orange",
+    messages: [
+      { from: "you", text: "Can we tweak the headline and swap that color?" },
+      { from: "nexara", text: "Done. Already pushed. Refresh and take a look." },
+    ],
   },
   {
-    num: "04",
-    icon: Rocket,
-    title: "Launch",
-    body: "We deliver. On time, polished, and ready to perform. The relationship doesn't end at launch — we're here after.",
+    day: 5,
+    label: "Shipped 🎉",
+    color: "active-green",
+    messages: [
+      { from: "nexara", text: "Shipped & live. Go get those customers. 🎉" },
+      { from: "you", text: "NEXARA YOU LEGENDS" },
+    ],
   },
 ];
 
+const CAL_DAYS = Array.from({ length: 35 }, (_, i) => {
+  const day = i - 2;
+  if (day < 1 || day > 30) return null;
+  return day;
+});
+
 export function ProcessSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(0);
+
+  const step = STEPS[activeStep];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "[data-process-card]",
-        { opacity: 0, y: 56, rotateX: 10, scale: 0.96 },
-        {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          scale: 1,
-          duration: 1.1,
-          stagger: 0.14,
-          ease: EASE_SOFT,
-          transformPerspective: 1200,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 768px)", () => {
+        const pin = pinRef.current;
+        if (!pin) return;
+
+        ScrollTrigger.create({
+          trigger: pin,
+          start: "top top",
+          end: `+=${STEPS.length * 200}`,
+          pin: true,
+          pinSpacing: true,
+          onUpdate: (self) => {
+            const idx = Math.min(
+              STEPS.length - 1,
+              Math.floor(self.progress * STEPS.length)
+            );
+            if (idx !== activeRef.current) {
+              activeRef.current = idx;
+              setActiveStep(idx);
+            }
           },
-        }
-      );
-    }, sectionRef);
+        });
+      });
+
+      gsap.from(".process-window", {
+        x: -80,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "#process", start: "top 80%" },
+      });
+    });
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="process" ref={sectionRef} className="bg-bg-primary">
-      <SectionLabel number="02" title="PROCESS" className="mb-12" />
+    <section id="process">
+      <p className="section-label">Getting Started Is Easy / 04</p>
 
-      <div className="mx-auto max-w-[1400px]">
-        <h2
-          className="font-display font-light leading-[0.95] tracking-[-0.03em] text-text-primary"
-          style={{ fontSize: "var(--text-display)" }}
-        >
-          <span className="block">Getting started</span>
-          <span className="block">is simple.</span>
-        </h2>
-        <p className="mt-8 max-w-xl font-sans text-[17px] font-light leading-[1.8] text-text-secondary">
-          Our process is built for teams who want quality without the
-          back-and-forth.
-        </p>
+      <div ref={pinRef}>
+        <MacWindow title="#nexara-x-yourbrand.app" className="process-window">
+          <div className="process-split">
+            <div className="process-calendar">
+              <p className="process-cal-header">&lt; June 2025 &gt;</p>
+              <div className="process-cal-days">
+                {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </div>
+              <div className="process-cal-grid">
+                {CAL_DAYS.map((day, i) => {
+                  if (day === null) return <span key={i} />;
+                  const stepMatch = STEPS.find((s) => s.day === day);
+                  const isActive = stepMatch && STEPS[activeStep].day === day;
+                  return (
+                    <span
+                      key={i}
+                      className={`process-cal-day ${isActive && stepMatch ? `${stepMatch.color} is-active` : ""}`}
+                    >
+                      {day}
+                    </span>
+                  );
+                })}
+              </div>
+              <p className="process-cal-label">{step.label}</p>
+            </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {STEPS.map((step) => {
-            const Icon = step.icon;
-            return (
-              <article
-                key={step.num}
-                data-process-card
-                className="soft-card p-8 transition-transform duration-500 hover:-translate-y-2"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <span className="font-display text-sm font-light text-text-muted">
-                  {step.num}
-                </span>
-                <Icon className="mt-6 text-gold" size={28} strokeWidth={1} />
-                <h3 className="mt-6 font-display text-2xl font-medium tracking-[-0.02em] text-text-primary">
-                  {step.title}
-                </h3>
-                <p className="mt-4 font-sans text-sm font-light leading-[1.75] text-text-secondary">
-                  {step.body}
-                </p>
-              </article>
-            );
-          })}
-        </div>
+            <div className="process-slack">
+              <p className="process-slack-header">#nexara-x-yourbrand</p>
+              <p className="process-slack-online">● 3 online</p>
+
+              {step.messages.map((msg, i) => (
+                <div key={i} className="process-msg">
+                  <span
+                    className={`process-msg-avatar ${msg.from === "nexara" ? "nexara" : ""}`}
+                  >
+                    {msg.from === "nexara" ? "N" : "Y"}
+                  </span>
+                  <div>
+                    <p className="process-msg-name">
+                      {msg.from === "nexara" ? "NEXARA" : "YOU"}
+                    </p>
+                    <p className="process-msg-text">{msg.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </MacWindow>
       </div>
     </section>
   );
