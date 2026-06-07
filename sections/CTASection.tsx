@@ -45,7 +45,7 @@ export function CTASection() {
         <span className="block accent">SOMETHING.</span>
       </h2>
 
-      <p className="cta-sub">Tell us what you&apos;re working on.</p>
+      <p className="cta-sub">Tell us what you&apos;re working on. · Colombo, Sri Lanka</p>
 
       <div className="cta-buttons">
         <Link

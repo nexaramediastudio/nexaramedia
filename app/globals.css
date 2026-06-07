@@ -76,6 +76,10 @@ section {
   padding: 120px 24px 80px;
 }
 
+.section-pinned {
+  overflow: hidden;
+}
+
 .section-label {
   font-size: 11px;
   font-weight: 700;
@@ -530,9 +534,7 @@ section {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.services-preview-card::before,
-.services-preview-card::after {
-  content: "";
+.services-preview-card .handle {
   position: absolute;
   width: 12px;
   height: 12px;
@@ -540,8 +542,31 @@ section {
   border-radius: 2px;
 }
 
-.services-preview-card::before { top: -6px; left: -6px; }
-.services-preview-card::after { bottom: -6px; right: -6px; }
+.handle-tl { top: -6px; left: -6px; }
+.handle-tr { top: -6px; right: -6px; }
+.handle-bl { bottom: -6px; left: -6px; }
+.handle-br { bottom: -6px; right: -6px; }
+
+.services-preview-bar {
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.services-preview-label {
+  font-size: 11px;
+  color: #999;
+  margin-top: 12px;
+}
+
+.services-layers-page { margin-top: 12px; }
+.services-add-layer { font-size: 11px; color: #555; margin-top: 16px; }
+.services-prop-label {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
 
 .services-properties {
   background: var(--color-card);
@@ -755,10 +780,34 @@ section {
 
 .vs-tagline .accent { color: var(--color-accent); }
 
+.vs-window-inner {
+  padding: 20px 24px 0;
+}
+
+.vs-headers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.vs-agency-name-muted { color: #999; }
+
+.vs-bubbles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.vs-cta-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 24px;
+  margin-top: 24px;
+}
+
 .vs-see-work {
-  display: block;
-  margin: 24px auto 0;
-  text-align: center;
+  display: inline-flex;
   font-weight: 600;
   font-size: 13px;
   color: var(--color-dark);
@@ -766,7 +815,12 @@ section {
   padding: 10px 24px;
   border-radius: 999px;
   text-decoration: none;
-  width: fit-content;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.vs-see-work:hover {
+  background: var(--color-dark);
+  color: #fff;
 }
 
 /* ── Process ───────────────────────────────────────────── */
@@ -836,6 +890,17 @@ section {
 .process-cal-day.is-active {
   color: #fff;
   font-weight: 700;
+  transform: scale(1.08);
+}
+
+.process-cal-day.is-milestone {
+  color: #fff;
+  opacity: 0.45;
+}
+
+.process-cal-day.is-milestone.is-active,
+.process-cal-day.is-active {
+  opacity: 1;
 }
 
 .process-cal-day.active-red { background: var(--color-accent); }
@@ -907,6 +972,54 @@ section {
   line-height: 1.5;
 }
 
+.process-msg-body { flex: 1; }
+
+.process-msg-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.process-msg-time {
+  font-size: 10px;
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+.process-mobile-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 0 12px;
+}
+
+@media (min-width: 768px) {
+  .process-mobile-steps { display: none; }
+}
+
+.process-step-btn {
+  font-family: "Figtree", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-gray);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.process-step-btn.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
 /* ── Work (dark) ─────────────────────────────────────── */
 #work {
   background: var(--color-dark);
@@ -941,7 +1054,11 @@ section {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(224, 60, 30, 0.12), transparent);
+  background: linear-gradient(
+    90deg,
+    hsla(var(--work-hue, 224), 60%, 40%, 0.22),
+    transparent 70%
+  );
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -980,9 +1097,14 @@ section {
   z-index: 1;
 }
 
+.work-more-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 40px 24px 0;
+}
+
 .work-more {
-  display: block;
-  margin: 40px 24px 0 auto;
+  display: inline-flex;
   width: fit-content;
   font-weight: 600;
   font-size: 13px;
@@ -1249,7 +1371,13 @@ section {
     padding: 8px 16px;
   }
 
-  .vs-exchange > div[style*="grid"] {
+  .vs-bubbles,
+  .vs-headers {
     grid-template-columns: 1fr !important;
+  }
+
+  .vs-cta-wrap {
+    justify-content: center;
+    padding-right: 0;
   }
 }

@@ -41,7 +41,7 @@ export function TestimonialsSection() {
         stagger: 0.12,
         duration: 0.6,
         ease: "power2.out",
-        scrollTrigger: { trigger: "#testimonials", start: "top 70%" },
+        scrollTrigger: { trigger: "#testimonials", start: "top 70%", toggleActions: "play none none none" },
       });
     });
 
@@ -54,12 +54,12 @@ export function TestimonialsSection() {
 
     let animId: number;
     let paused = false;
-    let pos = 0;
+    let pos = track.scrollLeft;
 
     const drift = () => {
-      if (!paused && !isDragging.current) {
-        pos += 0.3;
-        if (pos >= track.scrollWidth / 2) pos = 0;
+      if (!paused && !isDragging.current && track.scrollWidth > track.clientWidth) {
+        pos += 0.25;
+        if (pos >= track.scrollWidth - track.clientWidth) pos = 0;
         track.scrollLeft = pos;
       }
       animId = requestAnimationFrame(drift);
@@ -100,8 +100,8 @@ export function TestimonialsSection() {
       <p className="section-label">Loved By Clients / 06</p>
 
       <div ref={trackRef} className="testimonials-track">
-        {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
-          <article key={`${t.name}-${i}`} className="testimonial-card">
+        {TESTIMONIALS.map((t) => (
+          <article key={t.name} className="testimonial-card">
             <p className="testimonial-stars">★★★★★</p>
             <blockquote className="testimonial-quote">&ldquo;{t.quote}&rdquo;</blockquote>
             <div className="testimonial-divider" />

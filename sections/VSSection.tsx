@@ -31,21 +31,13 @@ export function VSSection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".vs-window", {
-        y: -50,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        scrollTrigger: { trigger: "#vs", start: "top 75%" },
-      });
-
       gsap.from(".vs-exchange", {
         y: 16,
         opacity: 0,
         stagger: 0.15,
         duration: 0.6,
         ease: "power2.out",
-        scrollTrigger: { trigger: "#vs", start: "top 65%" },
+        scrollTrigger: { trigger: "#vs", start: "top 65%", toggleActions: "play none none none" },
       });
     }, sectionRef);
 
@@ -58,11 +50,11 @@ export function VSSection() {
       <p className="vs-subtitle">the-difference.app</p>
 
       <MacWindow title="the-difference.app" className="vs-window">
-        <div style={{ padding: "20px 24px 0" }}>
-          <div className="vs-chat" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, padding: 0, minHeight: "auto", marginBottom: 20 }}>
+        <div className="vs-window-inner">
+          <div className="vs-headers">
             <div className="vs-col-header">
               <span className="vs-avatar-gray" />
-              <span style={{ color: "#999" }}>other-agency</span>
+              <span className="vs-agency-name-muted">other-agency</span>
             </div>
             <div className="vs-col-header">
               <span className="vs-avatar-n">N</span>
@@ -71,9 +63,9 @@ export function VSSection() {
           </div>
 
           {EXCHANGES.map((ex) => (
-            <div key={ex.client} className="vs-exchange" style={{ marginBottom: 24 }}>
-              <p className="vs-client-msg" style={{ margin: "0 0 12px" }}>{ex.client}</p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div key={ex.client} className="vs-exchange">
+              <p className="vs-client-msg">{ex.client}</p>
+              <div className="vs-bubbles">
                 <div className="vs-bubble-left">{ex.left}</div>
                 <div className="vs-bubble-right">{ex.right}</div>
               </div>
@@ -92,16 +84,18 @@ export function VSSection() {
         <span className="accent">Wildly different story.</span>
       </p>
 
-      <Link
-        href="#work"
-        onClick={(e) => {
-          e.preventDefault();
-          scrollToSection("work", lenis);
-        }}
-        className="vs-see-work"
-      >
-        see the work →
-      </Link>
+      <div className="vs-cta-wrap">
+        <Link
+          href="#work"
+          onClick={(e) => {
+            e.preventDefault();
+            scrollToSection("work", lenis);
+          }}
+          className="vs-see-work"
+        >
+          see the work →
+        </Link>
+      </div>
     </section>
   );
 }

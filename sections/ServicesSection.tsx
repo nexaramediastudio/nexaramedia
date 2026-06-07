@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { MacWindow } from "@/components/ui/MacWindow";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
@@ -83,6 +84,7 @@ const SERVICES = [
 export function ServicesSection() {
   const lenis = useLenisInstance();
   const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
 
@@ -93,16 +95,14 @@ export function ServicesSection() {
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 900px)", () => {
-        const pin = pinRef.current;
-        if (!pin) return;
-
-        const scrollDistance = window.innerHeight * 0.35 * (SERVICES.length - 1);
+        const section = sectionRef.current;
+        if (!section) return;
 
         ScrollTrigger.create({
-          trigger: pin,
+          trigger: section,
           start: "top top",
-          end: `+=${scrollDistance}`,
-          pin: true,
+          end: `+=${600 + (SERVICES.length - 1) * 120}`,
+          pin: pinRef.current,
           pinSpacing: true,
           anticipatePin: 1,
           onUpdate: (self) => {
@@ -116,34 +116,22 @@ export function ServicesSection() {
             }
           },
         });
-
-        gsap.from(".services-window", {
-          scale: 0.88,
-          opacity: 0,
-          duration: 0.8,
-          ease: "back.out(1.4)",
-          scrollTrigger: { trigger: "#services", start: "top 80%" },
-        });
-
-        gsap.to(".services-window", {
-          x: "-100vw",
-          opacity: 0,
-          ease: "power3.in",
-          scrollTrigger: {
-            trigger: "#services",
-            start: "bottom 60%",
-            end: "bottom 20%",
-            scrub: true,
-          },
-        });
       });
-    });
+
+      gsap.from(".services-window", {
+        scale: 0.88,
+        opacity: 0,
+        duration: 0.8,
+        ease: "back.out(1.4)",
+        scrollTrigger: { trigger: "#services", start: "top 80%", toggleActions: "play none none none" },
+      });
+    }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="services">
+    <section id="services" ref={sectionRef} className="section-pinned">
       <p className="section-label">What We Do / 02</p>
 
       <div ref={pinRef} className="services-window-wrap">
@@ -158,9 +146,8 @@ export function ServicesSection() {
                 type="button"
                 className={`services-layer-item ${active === i ? "is-active" : ""}`}
                 onClick={() => setActive(i)}
-                style={{ flexShrink: 0 }}
               >
-                {s.name.slice(0, 12)}…
+                {s.name.slice(0, 14)}…
               </button>
             ))}
           </div>
@@ -169,9 +156,7 @@ export function ServicesSection() {
             <div className="services-layers">
               <p className="services-layers-label">Layers</p>
               <input className="services-search" placeholder="Search layers…" readOnly />
-              <p className="services-layers-label" style={{ marginTop: 12 }}>
-                ▸ PAGE 1 · SERVICES
-              </p>
+              <p className="services-layers-label services-layers-page">▸ PAGE 1 · SERVICES</p>
               {SERVICES.map((s, i) => (
                 <button
                   key={s.num}
@@ -185,63 +170,83 @@ export function ServicesSection() {
                   <span>{s.num}</span>
                 </button>
               ))}
-              <p style={{ fontSize: 11, color: "#555", marginTop: 16 }}>+ add layer</p>
+              <p className="services-add-layer">+ add layer</p>
             </div>
 
             <div className="services-canvas">
-              <div className="services-preview-card">
-                {service.preview.map((line, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      height: i === 1 ? 12 : 8,
-                      background: i === 0 ? "var(--color-accent)" : "#e8e8e8",
-                      borderRadius: 4,
-                      marginBottom: 10,
-                      width: line.length > 6 ? "100%" : "70%",
-                      opacity: 0.7 + i * 0.1,
-                    }}
-                  />
-                ))}
-                <p style={{ fontSize: 11, color: "#999", marginTop: 12 }}>{service.name}</p>
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={service.num}
+                  initial={{ opacity: 0, scale: 0.94 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.04 }}
+                  transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                  className="services-preview-card"
+                >
+                  <span className="handle handle-tl" aria-hidden />
+                  <span className="handle handle-tr" aria-hidden />
+                  <span className="handle handle-bl" aria-hidden />
+                  <span className="handle handle-br" aria-hidden />
+                  {service.preview.map((line, i) => (
+                    <div
+                      key={i}
+                      className="services-preview-bar"
+                      style={{
+                        height: i === 1 ? 12 : 8,
+                        background: i === 0 ? "var(--color-accent)" : "#e8e8e8",
+                        width: line.length > 6 ? "100%" : "70%",
+                        opacity: 0.7 + i * 0.1,
+                      }}
+                    />
+                  ))}
+                  <p className="services-preview-label">{service.name}</p>
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             <div className="services-properties">
-              <p style={{ fontSize: 10, color: "#999", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
-                Properties
-              </p>
-              <h3 className="services-prop-name">{service.name}</h3>
-              <p className="services-prop-desc">{service.desc}</p>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={service.num}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -16 }}
+                  transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                >
+                  <p className="services-prop-label">Properties</p>
+                  <h3 className="services-prop-name">{service.name}</h3>
+                  <p className="services-prop-desc">{service.desc}</p>
 
-              <div className="services-tag-row">
-                <div className="services-tag-box">
-                  <p className="services-tag-label">Scope</p>
-                  <p className="services-tag-value">{service.scope}</p>
-                </div>
-                <div className="services-tag-box">
-                  <p className="services-tag-label">Output</p>
-                  <p className="services-tag-value">{service.output}</p>
-                </div>
-              </div>
+                  <div className="services-tag-row">
+                    <div className="services-tag-box">
+                      <p className="services-tag-label">Scope</p>
+                      <p className="services-tag-value">{service.scope}</p>
+                    </div>
+                    <div className="services-tag-box">
+                      <p className="services-tag-label">Output</p>
+                      <p className="services-tag-value">{service.output}</p>
+                    </div>
+                  </div>
 
-              <p className="services-deliverables-label">Deliverables</p>
-              {service.deliverables.map((d, i) => (
-                <p key={d} className="services-deliverable">
-                  /{String(i + 1).padStart(2, "0")} {d}
-                </p>
-              ))}
+                  <p className="services-deliverables-label">Deliverables</p>
+                  {service.deliverables.map((d, i) => (
+                    <p key={d} className="services-deliverable">
+                      /{String(i + 1).padStart(2, "0")} {d}
+                    </p>
+                  ))}
 
-              <Link
-                href="#cta"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("cta", lenis);
-                }}
-                className="services-start-btn"
-              >
-                Start a project
-              </Link>
+                  <Link
+                    href="#cta"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection("cta", lenis);
+                    }}
+                    className="services-start-btn"
+                  >
+                    Start a project
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </MacWindow>

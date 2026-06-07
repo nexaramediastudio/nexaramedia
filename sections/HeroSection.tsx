@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 
 export function HeroSection() {
   const lenis = useLenisInstance();
@@ -31,21 +31,6 @@ export function HeroSection() {
         duration: 0.8,
         delay: 1.1,
         ease: "elastic.out(1, 0.6)",
-      });
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "bottom 80%",
-        end: "bottom 20%",
-        scrub: true,
-        onUpdate: (self) => {
-          const p = self.progress;
-          gsap.set(sectionRef.current, {
-            scale: 1 - p * 0.04,
-            opacity: 1 - p,
-            filter: `blur(${p * 4}px)`,
-          });
-        },
       });
     }, sectionRef);
 
