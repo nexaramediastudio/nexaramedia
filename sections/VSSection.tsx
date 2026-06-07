@@ -3,27 +3,32 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { MacWindow } from "@/components/ui/MacWindow";
+import { SectionHead } from "@/components/ui/SectionHead";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap } from "@/lib/gsap";
 
-const EXCHANGES = [
-  {
-    client: "How soon can we start?",
-    left: "We'll need to schedule a discovery call to align stakeholders and define scope first…",
-    right: "Tomorrow. Brief us today.",
-  },
-  {
-    client: "What will it cost?",
-    left: "We'll prepare a detailed proposal after our initial alignment sessions…",
-    right: "Fixed price. No surprises. Ever.",
-  },
-  {
-    client: "Who do I work with?",
-    left: "Your dedicated project manager will coordinate with our team…",
-    right: "Me. The founder. Directly.",
-  },
-];
+const THEM = {
+  label: "Typical agency",
+  points: [
+    "Weeks of calls before anything gets designed.",
+    "Senior sells it — junior team builds it.",
+    "Retainer grows while output stays thin.",
+    "Revision #6 and the deck still says WIP.",
+    "Polished enough to approve. Too safe to remember.",
+  ],
+};
+
+const US = {
+  label: "Nexara",
+  points: [
+    "Founder on WhatsApp from the first message.",
+    "Real screens in days — not next quarter.",
+    "Fixed scope, fixed price, zero invoice shock.",
+    "Less process theatre. More things live.",
+    "Custom, sharp, built to stop the scroll.",
+  ],
+};
 
 export function VSSection() {
   const lenis = useLenisInstance();
@@ -31,13 +36,18 @@ export function VSSection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".vs-exchange", {
-        y: 16,
+      gsap.from(".vs-section .section-head, .vs-window", {
+        y: 36,
         opacity: 0,
         stagger: 0.15,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: { trigger: "#vs", start: "top 65%", toggleActions: "play none none none" },
+        duration: 0.85,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: "#vs",
+          start: "top 75%",
+          toggleActions: "play none none none",
+          once: true,
+        },
       });
     }, sectionRef);
 
@@ -45,56 +55,64 @@ export function VSSection() {
   }, []);
 
   return (
-    <section id="vs" ref={sectionRef}>
-      <p className="section-label">Why Choose Us / 03</p>
-      <p className="vs-subtitle">the-difference.app</p>
+    <section id="vs" ref={sectionRef} className="vs-section">
+      <SectionHead
+        number="05"
+        title={
+          <>
+            Same brief.
+            <br />
+            <span className="section-title-accent">Different outcome.</span>
+          </>
+        }
+        titleClassName="section-title--statement"
+      />
 
-      <MacWindow title="the-difference.app" className="vs-window">
-        <div className="vs-window-inner">
-          <div className="vs-headers">
-            <div className="vs-col-header">
-              <span className="vs-avatar-gray" />
-              <span className="vs-agency-name-muted">other-agency</span>
-            </div>
-            <div className="vs-col-header">
-              <span className="vs-avatar-n">N</span>
-              <span>nexara</span>
+      <div className="vs-window-wrap">
+        <MacWindow title="nexara-vs.fig" className="vs-window">
+          <div className="vs-stage">
+            <div className="vs-compare">
+              <article className="vs-card vs-card-them">
+                <p className="vs-card-label">{THEM.label}</p>
+                <ul className="vs-list">
+                  {THEM.points.map((point) => (
+                    <li key={point} className="vs-list-item vs-list-no">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+
+              <div className="vs-divider" aria-hidden>
+                <span className="vs-divider-badge">vs</span>
+              </div>
+
+              <article className="vs-card vs-card-us">
+                <p className="vs-card-label">{US.label}</p>
+                <ul className="vs-list">
+                  {US.points.map((point) => (
+                    <li key={point} className="vs-list-item vs-list-yes">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
             </div>
           </div>
 
-          {EXCHANGES.map((ex) => (
-            <div key={ex.client} className="vs-exchange">
-              <p className="vs-client-msg">{ex.client}</p>
-              <div className="vs-bubbles">
-                <div className="vs-bubble-left">{ex.left}</div>
-                <div className="vs-bubble-right">{ex.right}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="vs-status-bar">
-          <span>⏳ other-agency · still drafting proposal</span>
-          <span>✅ nexara · already shipped</span>
-        </div>
-      </MacWindow>
-
-      <p className="vs-tagline">
-        Same client. Same brief.{" "}
-        <span className="accent">Wildly different story.</span>
-      </p>
-
-      <div className="vs-cta-wrap">
-        <Link
-          href="#work"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("work", lenis);
-          }}
-          className="vs-see-work"
-        >
-          see the work →
-        </Link>
+          <div className="vs-footer">
+            <Link
+              href="#work"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("work", lenis);
+              }}
+              className="vs-cta"
+            >
+              See the work
+            </Link>
+          </div>
+        </MacWindow>
       </div>
     </section>
   );

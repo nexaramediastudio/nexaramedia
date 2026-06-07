@@ -11,21 +11,21 @@ export function CTASection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: "#cta", start: "top 70%" },
-      });
-      tl.from(".cta-headline", {
-        scale: 0.82,
+      gsap.from(".cta-headline", {
+        y: 40,
         opacity: 0,
         duration: 0.9,
-        ease: "back.out(1.4)",
-      })
-        .from(
-          ".cta-bubble",
-          { x: 40, opacity: 0, duration: 0.6, ease: "power2.out" },
-          "-=0.4"
-        )
-        .from(".cta-buttons", { y: 20, opacity: 0, duration: 0.5 }, "-=0.3");
+        ease: "power3.out",
+        scrollTrigger: { trigger: "#cta", start: "top 72%", toggleActions: "play none none none", once: true },
+      });
+      gsap.from(".cta-sub, .cta-buttons", {
+        y: 20,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.6,
+        ease: "power2.out",
+        scrollTrigger: { trigger: "#cta", start: "top 68%", toggleActions: "play none none none", once: true },
+      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -33,54 +33,34 @@ export function CTASection() {
 
   return (
     <section id="cta" ref={sectionRef}>
-      <div className="cta-bubble">
-        <span className="cta-bubble-avatar">N</span>
-        <p className="cta-bubble-text">
-          We actually reply. Usually within a couple of hours.
-        </p>
-      </div>
-
       <h2 className="cta-headline">
-        <span className="block">LET&apos;S BUILD</span>
-        <span className="block accent">SOMETHING.</span>
+        <span className="block">Let&apos;s build</span>
+        <span className="block accent">something great.</span>
       </h2>
 
-      <p className="cta-sub">Tell us what you&apos;re working on. · Colombo, Sri Lanka</p>
+      <p className="cta-sub">Colombo, Sri Lanka · Replies within hours</p>
 
       <div className="cta-buttons">
         <Link
-          href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi Nexara! I'd like to book a discovery call.")}`}
+          href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi Nexara! I'd like to start a project.")}`}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-accent"
         >
-          Book a discovery call
+          Book a call
         </Link>
         <a href="mailto:nexaramediastudio@gmail.com" className="cta-email">
           nexaramediastudio@gmail.com
         </a>
       </div>
 
-      <p className="cta-status">
-        <span className="hero-status-dot" />
-        2 online · replies in ~2 hrs
-      </p>
-
       <footer className="site-footer">
         © Nexara Media 2026 ·{" "}
-        <a
-          href="https://www.instagram.com/nexaramediastudio/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://www.instagram.com/nexaramediastudio/" target="_blank" rel="noopener noreferrer">
           Instagram
         </a>
         ·{" "}
-        <a
-          href="https://www.facebook.com/share/18gLjUTbY6/?mibextid=wwXIfr"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://www.facebook.com/share/18gLjUTbY6/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
           Facebook
         </a>
         ·{" "}

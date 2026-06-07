@@ -1,127 +1,74 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-function lerp(start: number, end: number, factor: number): number {
-  return start + (end - start) * factor;
-}
+import { createPortal } from "react-dom";
 
 export function CustomCursor() {
-  const ringRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
-  const [enabled, setEnabled] = useState(false);
-  const pos = useRef({ x: 0, y: 0 });
-  const target = useRef({ x: 0, y: 0 });
-  const state = useRef<"default" | "link" | "card">("default");
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const finePointer = window.matchMedia("(pointer: fine)").matches;
     if (!finePointer) return;
 
-    setEnabled(true);
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
     document.body.classList.add("has-custom-cursor");
+    cursor.style.opacity = "1";
 
-    const onMove = (e: MouseEvent) => {
-      target.current = { x: e.clientX, y: e.clientY };
+    const move = (e: MouseEvent) => {
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
     };
 
-    const onOver = (e: MouseEvent) => {
-      const el = e.target as HTMLElement;
-      if (el.closest("[data-cursor='card']")) {
-        state.current = "card";
-      } else if (el.closest("a, button, [data-cursor='link']")) {
-        state.current = "link";
-      } else {
-        state.current = "default";
-      }
+    const hide = () => {
+      cursor.style.opacity = "0";
     };
 
-    let rafId = 0;
-    const animate = () => {
-      pos.current.x = lerp(pos.current.x, target.current.x, 0.1);
-      pos.current.y = lerp(pos.current.y, target.current.y, 0.1);
-
-      const dotX = lerp(
-        parseFloat(dotRef.current?.style.left || "0") || pos.current.x,
-        target.current.x,
-        0.35
-      );
-      const dotY = lerp(
-        parseFloat(dotRef.current?.style.top || "0") || pos.current.y,
-        target.current.y,
-        0.35
-      );
-
-      const ring = ringRef.current;
-      const dot = dotRef.current;
-      const label = labelRef.current;
-
-      if (ring && dot) {
-        let size = 32;
-        if (state.current === "link") size = 52;
-        if (state.current === "card") size = 88;
-
-        ring.style.width = `${size}px`;
-        ring.style.height = `${size}px`;
-        ring.style.left = `${pos.current.x}px`;
-        ring.style.top = `${pos.current.y}px`;
-        ring.style.transform = "translate(-50%, -50%)";
-
-        dot.style.left = `${dotX}px`;
-        dot.style.top = `${dotY}px`;
-        dot.style.transform = "translate(-50%, -50%)";
-        dot.style.opacity = state.current === "link" ? "0" : "1";
-
-        if (state.current === "card") {
-          ring.style.borderColor = "var(--gold)";
-          ring.style.background = "rgba(201, 169, 110, 0.06)";
-          if (label) label.style.opacity = "1";
-        } else {
-          ring.style.borderColor =
-            state.current === "link"
-              ? "var(--gold)"
-              : "rgba(201, 169, 110, 0.45)";
-          ring.style.background = "transparent";
-          if (label) label.style.opacity = "0";
-        }
-      }
-
-      rafId = requestAnimationFrame(animate);
+    const show = () => {
+      cursor.style.opacity = "1";
     };
 
-    window.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseover", onOver);
-    rafId = requestAnimationFrame(animate);
+    window.addEventListener("mousemove", move, { passive: true });
+    document.documentElement.addEventListener("mouseleave", hide);
+    document.documentElement.addEventListener("mouseenter", show);
 
     return () => {
       document.body.classList.remove("has-custom-cursor");
-      window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseover", onOver);
-      cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", move);
+      document.documentElement.removeEventListener("mouseleave", hide);
+      document.documentElement.removeEventListener("mouseenter", show);
     };
-  }, []);
+  }, [mounted]);
 
-  if (!enabled) return null;
+  if (!mounted) return null;
 
-  return (
-    <>
-      <div
-        ref={ringRef}
-        className="pointer-events-none fixed z-[9999] flex items-center justify-center rounded-full border-[1.5px] transition-[width,height,background,border-color] duration-500"
-        style={{ borderColor: "rgba(201, 169, 110, 0.45)" }}
+  return createPortal(
+    <div ref={cursorRef} className="custom-cursor" aria-hidden>
+      <svg
+        className="custom-cursor-pointer"
+        width="24"
+        height="28"
+        viewBox="0 0 18 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <span
-          ref={labelRef}
-          className="font-sans text-[9px] font-medium tracking-[0.15em] text-gold opacity-0 transition-opacity duration-300"
-        >
-          VIEW
-        </span>
-      </div>
-      <div
-        ref={dotRef}
-        className="pointer-events-none fixed z-[9999] h-1 w-1 rounded-full bg-gold mix-blend-difference"
-      />
-    </>
+        <path
+          d="M1 1V15.8L5.1 12.1L8.4 19.8L10.6 18.7L7.3 11.2H13.2L1 1Z"
+          fill="#0d99ff"
+          stroke="#ffffff"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span className="custom-cursor-label">You</span>
+    </div>,
+    document.body
   );
 }

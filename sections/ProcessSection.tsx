@@ -2,82 +2,155 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { FileImage, FileText } from "lucide-react";
+import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { MacWindow } from "@/components/ui/MacWindow";
+import { SectionHead } from "@/components/ui/SectionHead";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
-const STEPS = [
+type ProcessMessage = {
+  from: "you" | "nexara";
+  text: string;
+  time: string;
+  file?: { name: string; kind: "fig" | "image" };
+  reaction?: { emoji: string; count: number };
+};
+
+const STEPS: { label: string; messages: ProcessMessage[] }[] = [
   {
-    day: 1,
-    label: "Brief Sent",
-    color: "active-red",
+    label: "Subscribe",
     messages: [
-      { from: "you", text: "Hey! Here's our brief. Super excited to get started.", time: "9:02 AM" },
-      { from: "nexara", text: "Got it. Love the direction. Kicking off tomorrow morning. 🚀", time: "9:18 AM" },
+      {
+        from: "you",
+        text: "Just grabbed the plan — excited to get started with you all.",
+        time: "10:02",
+      },
+      {
+        from: "nexara",
+        text: "Welcome aboard! Send your first brief whenever you're ready.",
+        time: "10:04",
+      },
+      {
+        from: "nexara",
+        text: "Kickoff call tomorrow at 10 works on our end.",
+        time: "10:05",
+      },
     ],
   },
   {
-    day: 2,
-    label: "First Draft",
-    color: "active-blue",
+    label: "Request",
     messages: [
-      { from: "nexara", text: "First draft is live. Check the link and let us know.", time: "2:41 PM" },
-      { from: "you", text: "🔥🔥🔥 this is way better than expected", time: "3:05 PM" },
+      {
+        from: "you",
+        text: "Here's the homepage brief — goals, refs, and copy direction inside.",
+        time: "10:18",
+        file: { name: "homepage-brief.fig", kind: "fig" },
+      },
+      {
+        from: "nexara",
+        text: "Brief locked in. First draft landing in 48 hours.",
+        time: "10:22",
+      },
     ],
   },
   {
-    day: 3,
-    label: "Revisions",
-    color: "active-orange",
+    label: "Revise",
     messages: [
-      { from: "you", text: "Can we tweak the headline and swap that color?", time: "10:22 AM" },
-      { from: "nexara", text: "Done. Already pushed. Refresh and take a look.", time: "10:47 AM" },
+      {
+        from: "nexara",
+        text: "V1 is live on the preview link — take a look when you can.",
+        time: "10:31",
+        file: { name: "homepage-v1.png", kind: "image" },
+      },
+      {
+        from: "you",
+        text: "Love it. Can we make the hero a little bolder?",
+        time: "Day 2",
+      },
+      {
+        from: "nexara",
+        text: "Unlimited revisions included — on it now.",
+        time: "Day 2",
+        reaction: { emoji: "🔥", count: 2 },
+      },
     ],
   },
   {
-    day: 5,
-    label: "Shipped 🎉",
-    color: "active-green",
+    label: "Shipped",
     messages: [
-      { from: "nexara", text: "Shipped & live. Go get those customers. 🎉", time: "4:30 PM" },
-      { from: "you", text: "NEXARA YOU LEGENDS", time: "4:33 PM" },
+      {
+        from: "nexara",
+        text: "Shipped & live. Handover doc is in your inbox.",
+        time: "4:28 PM",
+      },
+      {
+        from: "you",
+        text: "Just checked — this looks incredible. Thank you 🙌",
+        time: "4:31 PM",
+      },
+      {
+        from: "nexara",
+        text: "Proud of this one. Go get those customers.",
+        time: "4:33 PM",
+      },
     ],
   },
 ];
 
-const CAL_DAYS = Array.from({ length: 35 }, (_, i) => {
-  const day = i - 2;
-  if (day < 1 || day > 30) return null;
-  return day;
-});
+const NAV_OFFSET = 64;
+const SCROLL_VH_PER_STEP = 0.52;
+
+function processIndexFromProgress(progress: number) {
+  return Math.min(
+    STEPS.length - 1,
+    Math.round(progress * (STEPS.length - 1))
+  );
+}
+
+function processScrollDistance() {
+  return (
+    window.innerHeight * SCROLL_VH_PER_STEP * Math.max(1, STEPS.length - 1) +
+    320
+  );
+}
 
 export function ProcessSection() {
+  const lenis = useLenisInstance();
   const [activeStep, setActiveStep] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
+  const pinTriggerRef = useRef<ScrollTrigger | null>(null);
 
   const step = STEPS[activeStep];
+
+  useEffect(() => {
+    activeRef.current = activeStep;
+  }, [activeStep]);
+
+  useEffect(() => {
+    feedRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeStep]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 768px)", () => {
-        const section = sectionRef.current;
-        if (!section) return;
+      mm.add("(min-width: 900px)", () => {
+        const pin = pinRef.current;
+        if (!pin) return;
 
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          end: `+=${STEPS.length * 200}`,
-          pin: pinRef.current,
+        pinTriggerRef.current = ScrollTrigger.create({
+          trigger: pin,
+          start: `top ${NAV_OFFSET}px`,
+          end: `+=${processScrollDistance()}`,
+          pin: true,
           pinSpacing: true,
-          anticipatePin: 1,
+          anticipatePin: 0,
+          invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const idx = Math.min(
-              STEPS.length - 1,
-              Math.floor(self.progress * STEPS.length)
-            );
+            const idx = processIndexFromProgress(self.progress);
             if (idx !== activeRef.current) {
               activeRef.current = idx;
               setActiveStep(idx);
@@ -87,91 +160,157 @@ export function ProcessSection() {
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", refresh);
+
+    return () => {
+      window.removeEventListener("resize", refresh);
+      pinTriggerRef.current = null;
+      ctx.revert();
+    };
   }, []);
 
-  const getDayClass = (day: number) => {
-    const milestone = STEPS.find((s) => s.day === day);
-    if (!milestone) return "process-cal-day";
-    const isCurrent = STEPS[activeStep].day === day;
-    return `process-cal-day ${milestone.color} ${isCurrent ? "is-active" : "is-milestone"}`;
+  const selectStep = (index: number) => {
+    setActiveStep(index);
+    activeRef.current = index;
+
+    const trigger = pinTriggerRef.current;
+    if (!trigger) return;
+
+    const progress =
+      STEPS.length <= 1 ? 0 : index / (STEPS.length - 1);
+    const scrollPos = trigger.start + progress * (trigger.end - trigger.start);
+
+    if (lenis) {
+      lenis.scrollTo(scrollPos, {
+        duration: 2.2,
+        easing: (t) => 1 - Math.pow(1 - t, 4),
+      });
+    } else {
+      window.scrollTo({ top: scrollPos, behavior: "smooth" });
+    }
   };
 
   return (
-    <section id="process" ref={sectionRef} className="section-pinned">
-      <p className="section-label">Getting Started Is Easy / 04</p>
+    <section id="process" ref={sectionRef} className="section-pinned process-section">
+      <div ref={pinRef} className="process-pin">
+        <div className="process-topic">
+          <SectionHead
+            number="06"
+            kicker="how it works"
+            title="Getting started"
+            meta="is easy"
+          />
+        </div>
 
-      <div ref={pinRef}>
-        <MacWindow title="#nexara-x-yourbrand.app" className="process-window">
-          <div className="process-split">
-            <div className="process-calendar">
-              <p className="process-cal-header">&lt; June 2025 &gt;</p>
-              <div className="process-cal-days">
-                {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                  <span key={`${d}-${i}`}>{d}</span>
-                ))}
-              </div>
-              <div className="process-cal-grid">
-                {CAL_DAYS.map((day, i) =>
-                  day === null ? (
-                    <span key={i} />
-                  ) : (
-                    <span key={i} className={getDayClass(day)}>
-                      {day}
-                    </span>
-                  )
-                )}
-              </div>
-              <p className="process-cal-label">{step.label}</p>
-            </div>
-
+        <div className="process-window-wrap">
+          <MacWindow title="#nexara-x-yourbrand" className="process-window">
             <div className="process-slack">
-              <p className="process-slack-header">#nexara-x-yourbrand</p>
-              <p className="process-slack-online">● 3 online</p>
+              <div className="process-slack-top">
+                <p className="process-slack-header">
+                  <span className="process-slack-hash">#</span> nexara x your-brand
+                </p>
+                <div className="process-slack-presence">
+                  <div className="process-slack-avatars" aria-hidden>
+                    <span className="process-slack-avatar">Y</span>
+                    <span className="process-slack-avatar process-slack-avatar--nexara">N</span>
+                    <span className="process-slack-avatar process-slack-avatar--muted">+</span>
+                  </div>
+                  <p className="process-slack-online">
+                    <span className="process-slack-online-dot" aria-hidden />
+                    3 online
+                  </p>
+                </div>
+              </div>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeStep}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35 }}
-                >
-                  {step.messages.map((msg, i) => (
-                    <div key={i} className="process-msg">
-                      <span
-                        className={`process-msg-avatar ${msg.from === "nexara" ? "nexara" : ""}`}
-                      >
-                        {msg.from === "nexara" ? "N" : "Y"}
-                      </span>
-                      <div className="process-msg-body">
-                        <div className="process-msg-meta">
-                          <p className="process-msg-name">
-                            {msg.from === "nexara" ? "NEXARA" : "YOU"}
-                          </p>
-                          <span className="process-msg-time">{msg.time}</span>
+              <nav className="process-steps" aria-label="Process steps">
+                {STEPS.map((s, i) => (
+                  <button
+                    key={s.label}
+                    type="button"
+                    className={`process-step-tab ${activeStep === i ? "is-active" : ""} ${i < activeStep ? "is-done" : ""}`}
+                    onClick={() => selectStep(i)}
+                    aria-current={activeStep === i ? "step" : undefined}
+                  >
+                    <span className="process-step-tab-num">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="process-step-tab-label">{s.label}</span>
+                  </button>
+                ))}
+              </nav>
+
+              <div ref={feedRef} className="process-slack-feed">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeStep}
+                    className="process-slack-messages"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                  >
+                    {step.messages.map((msg, i) => {
+                      const prev = step.messages[i - 1];
+                      const grouped = prev?.from === msg.from;
+
+                      return (
+                        <div
+                          key={`${activeStep}-${i}`}
+                          className={`process-msg ${grouped ? "process-msg--grouped" : ""}`}
+                        >
+                          {grouped ? (
+                            <span className="process-msg-spacer" aria-hidden />
+                          ) : (
+                            <span
+                              className={`process-msg-avatar ${msg.from === "nexara" ? "nexara" : ""}`}
+                            >
+                              {msg.from === "nexara" ? "N" : "Y"}
+                            </span>
+                          )}
+                          <div className="process-msg-body">
+                            {!grouped && (
+                              <div className="process-msg-meta">
+                                <p className="process-msg-name">
+                                  {msg.from === "nexara" ? "NEXARA" : "YOU"}
+                                </p>
+                                <span className="process-msg-time">{msg.time}</span>
+                              </div>
+                            )}
+                            <p className="process-msg-text">{msg.text}</p>
+                            {msg.file && (
+                              <span className="process-msg-file">
+                                {msg.file.kind === "fig" ? (
+                                  <FileText size={14} strokeWidth={2} />
+                                ) : (
+                                  <FileImage size={14} strokeWidth={2} />
+                                )}
+                                {msg.file.name}
+                              </span>
+                            )}
+                            {msg.reaction && (
+                              <span className="process-msg-reaction">
+                                {msg.reaction.emoji} {msg.reaction.count}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <p className="process-msg-text">{msg.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-        </MacWindow>
+                      );
+                    })}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
 
-        <div className="process-mobile-steps">
-          {STEPS.map((s, i) => (
-            <button
-              key={s.day}
-              type="button"
-              className={`process-step-btn ${activeStep === i ? "is-active" : ""}`}
-              onClick={() => setActiveStep(i)}
-            >
-              Day {s.day} · {s.label}
-            </button>
-          ))}
+              <div className="process-slack-typing" aria-hidden>
+                <span className="process-msg-avatar process-msg-avatar--typing">N</span>
+                <span className="process-slack-typing-dots">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </div>
+            </div>
+          </MacWindow>
         </div>
       </div>
     </section>

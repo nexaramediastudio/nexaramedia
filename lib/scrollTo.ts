@@ -1,5 +1,7 @@
 import type Lenis from "@studio-freight/lenis";
 
+const SCROLL_EASE = (t: number) => 1 - Math.pow(1 - t, 4);
+
 export function scrollToSection(
   id: string,
   lenis: Lenis | null,
@@ -9,7 +11,11 @@ export function scrollToSection(
   if (!el) return;
 
   if (lenis) {
-    lenis.scrollTo(el, { offset, duration: 1.4 });
+    lenis.scrollTo(el, {
+      offset,
+      duration: 2.2,
+      easing: SCROLL_EASE,
+    });
     return;
   }
 

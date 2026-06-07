@@ -2,14 +2,33 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { SectionHead } from "@/components/ui/SectionHead";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 const PROJECTS = [
-  { num: "01", name: "Ridermo Website", meta: "Motorcycle Showroom · 2024", hue: "224" },
-  { num: "02", name: "Ridermo System", meta: "Internal Dashboard · 2024", hue: "200" },
-  { num: "03", name: "Pryme", meta: "T-Shirt Brand · 2024", hue: "15" },
+  {
+    num: "01",
+    name: "Ridermo Website",
+    type: "Web",
+    meta: "Motorcycle Showroom · 2024",
+    bars: [88, 62, 74],
+  },
+  {
+    num: "02",
+    name: "Ridermo System",
+    type: "Product",
+    meta: "Internal Dashboard · 2024",
+    bars: [70, 90, 55],
+  },
+  {
+    num: "03",
+    name: "Pryme",
+    type: "Brand",
+    meta: "T-Shirt Brand · 2024",
+    bars: [60, 78, 66],
+  },
 ];
 
 export function WorkSection() {
@@ -18,7 +37,7 @@ export function WorkSection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".work-row", {
+      gsap.from(".work-card", {
         y: 40,
         opacity: 0,
         stagger: 0.1,
@@ -32,6 +51,7 @@ export function WorkSection() {
         start: "top 80%",
         end: "bottom 20%",
         onEnter: () => document.body.classList.add("is-dark-section"),
+        onLeave: () => document.body.classList.remove("is-dark-section"),
         onLeaveBack: () => document.body.classList.remove("is-dark-section"),
       });
     }, sectionRef);
@@ -39,36 +59,43 @@ export function WorkSection() {
     return () => ctx.revert();
   }, []);
 
-  return (
-    <section id="work" ref={sectionRef}>
-      <p className="section-label">Featured Work / 05</p>
+  const goCta = (e: React.MouseEvent) => {
+    e.preventDefault();
+    scrollToSection("cta", lenis);
+  };
 
-      {PROJECTS.map((p) => (
-        <Link
-          key={p.num}
-          href="#cta"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("cta", lenis);
-          }}
-          className="work-row"
-          style={{ "--work-hue": p.hue } as React.CSSProperties}
-        >
-          <span className="work-num">/{p.num}</span>
-          <span className="work-name">{p.name}</span>
-          <span className="work-meta">{p.meta}</span>
-        </Link>
-      ))}
+  return (
+    <section id="work" ref={sectionRef} className="work-section">
+      <SectionHead number="04" kicker="selected projects" title="Featured work" dark />
+
+      <div className="work-grid">
+        {PROJECTS.map((p, i) => (
+          <Link
+            key={p.num}
+            href="#cta"
+            onClick={goCta}
+            className={`work-card ${i === 0 ? "work-card--feature" : ""}`}
+          >
+            <div className="work-card-preview" aria-hidden>
+              {p.bars.map((w, j) => (
+                <span key={j} className="work-preview-bar" style={{ width: `${w}%` }} />
+              ))}
+            </div>
+
+            <div className="work-card-body">
+              <div className="work-card-top">
+                <span className="work-card-num">/{p.num}</span>
+                <span className="work-card-type">{p.type}</span>
+              </div>
+              <h3 className="work-card-name">{p.name}</h3>
+              <p className="work-card-meta">{p.meta}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
 
       <div className="work-more-wrap">
-        <Link
-          href="#cta"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("cta", lenis);
-          }}
-          className="work-more"
-        >
+        <Link href="#cta" onClick={goCta} className="work-more">
           See more work →
         </Link>
       </div>

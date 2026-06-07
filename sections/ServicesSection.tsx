@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { Check } from "lucide-react";
 import { MacWindow } from "@/components/ui/MacWindow";
+import { SectionHead } from "@/components/ui/SectionHead";
+import { ServiceIcon, type ServiceIconId } from "@/components/ui/ServiceIcon";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
@@ -12,74 +15,77 @@ const SERVICES = [
   {
     num: "01",
     name: "Social Media Management",
-    icon: "□",
+    icon: "social" as ServiceIconId,
     desc: "Strategy, content, and community management that keeps your brand visible and growing every day.",
     scope: "Retainer",
     output: "Monthly calendar",
     deliverables: ["Content strategy", "Post design", "Community mgmt", "Analytics reports", "Trend monitoring"],
-    preview: ["▬▬▬▬", "▬▬▬", "▬▬▬▬▬"],
   },
   {
     num: "02",
     name: "Video Production",
-    icon: "<>",
+    icon: "video" as ServiceIconId,
     desc: "From concept to final cut — brand films, social reels, and product videos that stop the scroll.",
     scope: "Project",
     output: "Final video assets",
     deliverables: ["Concept & script", "Filming / motion", "Editing & grade", "Social cuts", "Raw files"],
-    preview: ["▶ ▬▬▬", "▬▬▬▬▬", "▬▬"],
   },
   {
     num: "03",
     name: "Web Development",
-    icon: "◇",
+    icon: "web" as ServiceIconId,
     desc: "Fast, beautiful websites and web apps built to convert visitors into customers.",
     scope: "Project",
     output: "Live website",
     deliverables: ["UI/UX design", "Development", "CMS setup", "SEO basics", "Launch support"],
-    preview: ["▬▬ ▬", "▬▬▬▬▬", "▬▬ ▬▬"],
   },
   {
     num: "04",
     name: "AI Automation",
-    icon: "□",
+    icon: "ai" as ServiceIconId,
     desc: "Custom AI workflows and automations that eliminate repetitive work and save your team hours.",
     scope: "Retainer / Project",
     output: "Automated systems",
     deliverables: ["Workflow audit", "AI integration", "Dashboard build", "Training", "Maintenance"],
-    preview: ["⚡ ▬▬", "▬▬▬", "▬▬ ⚡"],
   },
   {
     num: "05",
     name: "Branding & Identity",
-    icon: "□",
+    icon: "brand" as ServiceIconId,
     desc: "Logo, visual language, and brand guidelines that make your business impossible to forget.",
     scope: "Project",
     output: "Brand kit",
     deliverables: ["Logo design", "Color & type", "Brand guidelines", "Collateral", "Social templates"],
-    preview: ["◆ ▬▬", "▬▬▬▬", "▬ ◆"],
   },
   {
     num: "06",
     name: "Ad Campaigns",
-    icon: "□",
+    icon: "ads" as ServiceIconId,
     desc: "Paid social and search campaigns built for measurable ROI, not vanity metrics.",
     scope: "Retainer",
     output: "Campaign reports",
     deliverables: ["Audience research", "Ad creative", "Campaign setup", "A/B testing", "Monthly reports"],
-    preview: ["$ ▬▬", "▬▬▬▬", "▬▬ $"],
   },
   {
     num: "07",
     name: "SEO",
-    icon: "□",
+    icon: "seo" as ServiceIconId,
     desc: "Technical and content SEO that gets your brand found by the people actively searching for you.",
     scope: "Retainer",
     output: "Ranking growth",
     deliverables: ["Site audit", "Keyword strategy", "On-page SEO", "Content plan", "Monthly tracking"],
-    preview: ["↑ ▬▬", "▬▬▬", "▬▬ ↑"],
   },
 ];
+
+const NAV_OFFSET = 64;
+const SCROLL_PER_STEP = 200;
+
+function serviceIndexFromProgress(progress: number) {
+  return Math.min(
+    SERVICES.length - 1,
+    Math.round(progress * (SERVICES.length - 1))
+  );
+}
 
 export function ServicesSection() {
   const lenis = useLenisInstance();
@@ -87,29 +93,52 @@ export function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
+  const pinTriggerRef = useRef<ScrollTrigger | null>(null);
 
   const service = SERVICES[active];
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  const selectService = (index: number) => {
+    setActive(index);
+    activeRef.current = index;
+
+    const trigger = pinTriggerRef.current;
+    if (!trigger) return;
+
+    const progress =
+      SERVICES.length <= 1 ? 0 : index / (SERVICES.length - 1);
+    const scrollPos = trigger.start + progress * (trigger.end - trigger.start);
+
+    if (lenis) {
+      lenis.scrollTo(scrollPos, { duration: 2.2, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    } else {
+      window.scrollTo({ top: scrollPos, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 900px)", () => {
-        const section = sectionRef.current;
-        if (!section) return;
+        const pin = pinRef.current;
+        if (!pin) return;
 
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          end: `+=${600 + (SERVICES.length - 1) * 120}`,
-          pin: pinRef.current,
+        const scrollDistance = 600 + (SERVICES.length - 1) * SCROLL_PER_STEP;
+
+        pinTriggerRef.current = ScrollTrigger.create({
+          trigger: pin,
+          start: `top ${NAV_OFFSET}px`,
+          end: `+=${scrollDistance}`,
+          pin: true,
           pinSpacing: true,
-          anticipatePin: 1,
+          anticipatePin: 0,
+          invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const idx = Math.min(
-              SERVICES.length - 1,
-              Math.floor(self.progress * SERVICES.length)
-            );
+            const idx = serviceIndexFromProgress(self.progress);
             if (idx !== activeRef.current) {
               activeRef.current = idx;
               setActive(idx);
@@ -118,103 +147,139 @@ export function ServicesSection() {
         });
       });
 
-      gsap.from(".services-window", {
-        scale: 0.88,
-        opacity: 0,
-        duration: 0.8,
-        ease: "back.out(1.4)",
-        scrollTrigger: { trigger: "#services", start: "top 80%", toggleActions: "play none none none" },
-      });
+      gsap.fromTo(
+        ".services-window",
+        { scale: 0.96, opacity: 0.5 },
+        {
+          scale: 1,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#services",
+            start: "top 96%",
+            end: "top 52%",
+            scrub: 2,
+            onLeaveBack: () =>
+              gsap.set(".services-window", { clearProps: "opacity,scale" }),
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".services-pin .section-head",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#services",
+            start: "top 96%",
+            end: "top 58%",
+            scrub: 2,
+            onLeaveBack: () =>
+              gsap.set(".services-pin .section-head", { clearProps: "y,opacity" }),
+          },
+        }
+      );
     }, sectionRef);
 
-    return () => ctx.revert();
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", refresh);
+
+    return () => {
+      window.removeEventListener("resize", refresh);
+      pinTriggerRef.current = null;
+      ctx.revert();
+    };
   }, []);
 
   return (
-    <section id="services" ref={sectionRef} className="section-pinned">
-      <p className="section-label">What We Do / 02</p>
+    <section id="services" ref={sectionRef} className="section-pinned services-section">
+      <div ref={pinRef} className="services-pin">
+        <SectionHead number="03" kicker="what we do" title="Services" />
 
-      <div ref={pinRef} className="services-window-wrap">
-        <span className="services-pill services-pill-tap">tap a layer</span>
-        <span className="services-pill services-pill-selected">nexara · selected</span>
-
-        <MacWindow title="nexara-services.fig" className="services-window">
-          <div className="services-mobile-tabs">
-            {SERVICES.map((s, i) => (
-              <button
-                key={s.num}
-                type="button"
-                className={`services-layer-item ${active === i ? "is-active" : ""}`}
-                onClick={() => setActive(i)}
-              >
-                {s.name.slice(0, 14)}…
-              </button>
-            ))}
-          </div>
-
-          <div className="services-panels">
-            <div className="services-layers">
-              <p className="services-layers-label">Layers</p>
-              <input className="services-search" placeholder="Search layers…" readOnly />
-              <p className="services-layers-label services-layers-page">▸ PAGE 1 · SERVICES</p>
+        <div className="services-window-wrap">
+          <MacWindow title="nexara-services.fig" className="services-window">
+            <div className="services-mobile-tabs">
               {SERVICES.map((s, i) => (
                 <button
                   key={s.num}
                   type="button"
                   className={`services-layer-item ${active === i ? "is-active" : ""}`}
-                  onClick={() => setActive(i)}
+                  onClick={() => selectService(i)}
                 >
-                  <span>
-                    {s.icon} {s.name}
+                  <span className="services-layer-icon">
+                    <ServiceIcon id={s.icon} size={14} />
                   </span>
-                  <span>{s.num}</span>
+                  {s.name.split(" ")[0]}
                 </button>
               ))}
-              <p className="services-add-layer">+ add layer</p>
             </div>
 
-            <div className="services-canvas">
-              <AnimatePresence mode="wait">
+            <div className="services-panels">
+              <div className="services-layers">
+                <div className="services-layers-list">
+                  {SERVICES.map((s, i) => (
+                    <button
+                      key={s.num}
+                      type="button"
+                      className={`services-layer-item ${active === i ? "is-active" : ""}`}
+                      onClick={() => selectService(i)}
+                    >
+                      <span className="services-layer-leading">
+                        <span className="services-layer-icon">
+                          <ServiceIcon id={s.icon} size={14} />
+                        </span>
+                        <span className="services-layer-name">{s.name}</span>
+                      </span>
+                      <span className="services-layer-num">{s.num}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="services-canvas">
                 <motion.div
                   key={service.num}
-                  initial={{ opacity: 0, scale: 0.94 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.04 }}
-                  transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                  transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
                   className="services-preview-card"
                 >
                   <span className="handle handle-tl" aria-hidden />
                   <span className="handle handle-tr" aria-hidden />
                   <span className="handle handle-bl" aria-hidden />
                   <span className="handle handle-br" aria-hidden />
-                  {service.preview.map((line, i) => (
-                    <div
-                      key={i}
-                      className="services-preview-bar"
-                      style={{
-                        height: i === 1 ? 12 : 8,
-                        background: i === 0 ? "var(--color-accent)" : "#e8e8e8",
-                        width: line.length > 6 ? "100%" : "70%",
-                        opacity: 0.7 + i * 0.1,
-                      }}
-                    />
-                  ))}
+                  <div className="services-preview-icon">
+                    <ServiceIcon id={service.icon} size={28} strokeWidth={1.75} />
+                  </div>
+                  <div className="services-preview-mock">
+                    <span className="services-preview-mock-bar services-preview-mock-bar--accent" />
+                    <span className="services-preview-mock-bar" />
+                    <span className="services-preview-mock-bar services-preview-mock-bar--short" />
+                  </div>
                   <p className="services-preview-label">{service.name}</p>
                 </motion.div>
-              </AnimatePresence>
-            </div>
+              </div>
 
-            <div className="services-properties">
-              <AnimatePresence mode="wait">
+              <div className="services-properties">
                 <motion.div
                   key={service.num}
-                  initial={{ opacity: 0, x: 20 }}
+                  className="services-props-scroll"
+                  initial={{ opacity: 0, x: 12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                  transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
                 >
-                  <p className="services-prop-label">Properties</p>
-                  <h3 className="services-prop-name">{service.name}</h3>
+                  <div className="services-prop-head">
+                    <div className="services-prop-icon">
+                      <ServiceIcon id={service.icon} size={22} strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="services-prop-label">Overview</p>
+                      <h3 className="services-prop-name">{service.name}</h3>
+                    </div>
+                  </div>
                   <p className="services-prop-desc">{service.desc}</p>
 
                   <div className="services-tag-row">
@@ -229,27 +294,30 @@ export function ServicesSection() {
                   </div>
 
                   <p className="services-deliverables-label">Deliverables</p>
-                  {service.deliverables.map((d, i) => (
-                    <p key={d} className="services-deliverable">
-                      /{String(i + 1).padStart(2, "0")} {d}
-                    </p>
-                  ))}
-
-                  <Link
-                    href="#cta"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection("cta", lenis);
-                    }}
-                    className="services-start-btn"
-                  >
-                    Start a project
-                  </Link>
+                  <ul className="services-deliverables-list">
+                    {service.deliverables.map((d) => (
+                      <li key={d} className="services-deliverable">
+                        <Check size={14} strokeWidth={2.5} className="services-deliverable-icon" />
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
                 </motion.div>
-              </AnimatePresence>
+
+                <Link
+                  href="#cta"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection("cta", lenis);
+                  }}
+                  className="services-start-btn"
+                >
+                  Start a project
+                </Link>
+              </div>
             </div>
-          </div>
-        </MacWindow>
+          </MacWindow>
+        </div>
       </div>
     </section>
   );

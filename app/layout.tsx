@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LenisProvider } from "@/components/providers/LenisProvider";
+import { CustomCursor } from "@/components/ui/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Nexara Media — Brands That Cannot Be Ignored.",
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <LenisProvider>{children}</LenisProvider>
+        <LenisProvider>
+          <CustomCursor />
+          {children}
+        </LenisProvider>
       </body>
     </html>
   );

@@ -11,8 +11,7 @@ const SECTIONS = [
   { id: "process", label: "04 · PROCESS" },
   { id: "services", label: "05 · SERVICES" },
   { id: "work", label: "06 · WORK" },
-  { id: "testimonials", label: "07 · TESTIMONIALS" },
-  { id: "contact", label: "08 · CONTACT" },
+  { id: "contact", label: "07 · CONTACT" },
 ];
 
 export function SectionNav() {

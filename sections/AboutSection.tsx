@@ -1,155 +1,129 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { gsap } from "@/lib/gsap";
-import { EASE_SOFT } from "@/lib/animations";
+import Link from "next/link";
+import { SectionHead } from "@/components/ui/SectionHead";
+import { useLenisInstance } from "@/components/providers/LenisProvider";
+import { scrollToSection } from "@/lib/scrollTo";
 
-const STATS = [
-  { value: 10, suffix: "+", label: "Brands worked with" },
-  { value: 100, suffix: "%", label: "Client satisfaction" },
-  { value: 7, suffix: "", label: "Core services" },
+const CAPABILITIES = ["Strategy", "Design", "Code", "Social", "Branding", "Video"];
+
+const METRICS = [
+  { value: "10+", label: "Brands shipped" },
+  { value: "7", label: "Core services" },
+  { value: "48h", label: "Avg. reply time" },
 ];
 
+const STACK = ["Figma", "Next.js", "GSAP", "Webflow"];
+
 export function AboutSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
-  const statRefs = useRef<(HTMLSpanElement | null)[]>([]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "[data-about-line]",
-        { opacity: 0, y: 40, rotateX: 6 },
-        {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          duration: 1.1,
-          stagger: 0.12,
-          ease: EASE_SOFT,
-          transformPerspective: 1200,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-
-      if (lineRef.current) {
-        gsap.fromTo(
-          lineRef.current,
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            duration: 1.2,
-            ease: EASE_SOFT,
-            scrollTrigger: {
-              trigger: lineRef.current,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
-      }
-
-      gsap.fromTo(
-        "[data-about-body]",
-        { opacity: 0, y: 32 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: EASE_SOFT,
-          scrollTrigger: {
-            trigger: "[data-about-body]",
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-
-      STATS.forEach((stat, i) => {
-        const el = statRefs.current[i];
-        if (!el) return;
-        const obj = { val: 0 };
-        gsap.to(obj, {
-          val: stat.value,
-          duration: 2,
-          ease: EASE_SOFT,
-          scrollTrigger: {
-            trigger: el,
-            start: "top 90%",
-          },
-          onUpdate: () => {
-            el.textContent = `${Math.round(obj.val)}${stat.suffix}`;
-          },
-        });
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const lenis = useLenisInstance();
 
   return (
-    <section id="about" ref={sectionRef} className="bg-bg-secondary">
-      <SectionLabel number="01" title="ABOUT" className="mb-12" />
+    <section id="about" className="about-section">
+      <SectionHead
+        number="02"
+        kicker="who we are"
+        title="About us"
+        meta="Colombo, Sri Lanka"
+      />
 
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-20 lg:grid-cols-2">
-        <div>
-          <h2
-            className="font-display font-light leading-[0.95] tracking-[-0.03em] text-text-primary"
-            style={{ fontSize: "var(--text-display)" }}
-          >
-            <span data-about-line className="block">
-              We help brands
-            </span>
-            <span data-about-line className="block">
-              establish what
-            </span>
-            <span data-about-line className="block">
-              modern looks like.
-            </span>
-          </h2>
-          <div
-            ref={lineRef}
-            className="mt-10 h-px w-[120px] origin-left bg-gold/50"
-          />
-        </div>
-
-        <div>
-          <p
-            data-about-body
-            className="font-sans text-[17px] font-light leading-[1.85] text-text-secondary"
-          >
-            We&apos;re a full-spectrum digital studio working with established
-            brands and serious operators who want more than just a pretty
-            website. We build the systems, identities, and experiences that give
-            businesses a real competitive edge — and we care deeply about every
-            detail.
+      <div className="about-bento">
+        <article className="about-card about-card--statement">
+          <p className="about-statement">
+            We&apos;re a Colombo studio that makes good brands look{" "}
+            <em className="about-statement-accent">inevitable</em>. Strategy,
+            design, and code — plus the obsessive details most teams skip.
           </p>
-
-          <div className="my-12 h-px bg-[var(--divider)]" />
-
-          <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
-            {STATS.map((stat, i) => (
-              <div key={stat.label}>
-                <span
-                  ref={(el) => {
-                    statRefs.current[i] = el;
-                  }}
-                  className="font-display text-5xl font-light text-gold"
-                >
-                  0{stat.suffix}
-                </span>
-                <p className="mt-2 font-sans text-[11px] tracking-wide text-text-muted">
-                  {stat.label}
-                </p>
-              </div>
+          <div className="about-tags">
+            {CAPABILITIES.slice(0, 5).map((tag) => (
+              <span key={tag} className="about-tag">
+                {tag}
+              </span>
             ))}
           </div>
-        </div>
+          <footer className="about-card-foot">
+            <span>Made by humans, not templates</span>
+            <span className="about-status">
+              <span className="about-status-dot" aria-hidden />
+              Available for projects
+            </span>
+          </footer>
+        </article>
+
+        <article className="about-card about-card--metrics">
+          <header className="about-card-head about-card-head--light">
+            <span>Metrics</span>
+          </header>
+          <ul className="about-metrics">
+            {METRICS.map((m) => (
+              <li key={m.label}>
+                <span className="about-metric-value">{m.value}</span>
+                <span className="about-metric-label">{m.label}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="about-card about-card--capabilities">
+          <header className="about-card-head">
+            <span>Capabilities</span>
+          </header>
+          <div className="about-pills">
+            {CAPABILITIES.map((cap) => (
+              <span key={cap} className="about-pill">
+                {cap}
+              </span>
+            ))}
+          </div>
+        </article>
+
+        <article className="about-card about-card--studio">
+          <Link
+            href="#work"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("work", lenis);
+            }}
+            className="about-studio-link"
+          >
+            <span className="about-studio-play" aria-hidden>
+              ▶
+            </span>
+            <span className="about-studio-title">Nexara</span>
+            <span className="about-studio-sub">see the work</span>
+          </Link>
+        </article>
+
+        <article className="about-card about-card--stack">
+          <header className="about-card-head">
+            <span>▶ Currently building in</span>
+          </header>
+          <p className="about-stack-title">Next.js &amp; Figma</p>
+          <div className="about-tags about-tags--compact">
+            {STACK.map((tool) => (
+              <span key={tool} className="about-tag">
+                {tool}
+              </span>
+            ))}
+          </div>
+        </article>
+
+        <article className="about-card about-card--review">
+          <header className="about-card-head">
+            <span className="about-stars" aria-label="5 stars">
+              ★★★★★
+            </span>
+            <span>review_01</span>
+          </header>
+          <blockquote className="about-quote">
+            &ldquo;Nexara completely transformed how we present Ridermo online.
+            Premium, fast, and exactly what we needed.&rdquo;
+          </blockquote>
+          <footer className="about-review-author">
+            <span className="about-review-avatar">R</span>
+            <span className="about-review-name">Ridermo Team · Client</span>
+          </footer>
+        </article>
       </div>
     </section>
   );

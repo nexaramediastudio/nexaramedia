@@ -4,6 +4,14 @@ import { useEffect } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useLenisInstance } from "./LenisProvider";
 
+const SCRUB = 1.4;
+
+function resetServicesVisuals() {
+  gsap.set("#services .services-pin", { opacity: 1, clearProps: "filter" });
+  gsap.set(".services-pin .section-head", { clearProps: "y,opacity" });
+  gsap.set(".services-window", { opacity: 1, x: 0, scale: 1, clearProps: "filter" });
+}
+
 export function ScrollExperience({ children }: { children: React.ReactNode }) {
   const lenis = useLenisInstance();
 
@@ -11,111 +19,131 @@ export function ScrollExperience({ children }: { children: React.ReactNode }) {
     if (!lenis) return;
 
     const ctx = gsap.context(() => {
-      // HERO → SERVICES
+      ScrollTrigger.create({
+        trigger: "#services",
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: resetServicesVisuals,
+        onEnterBack: resetServicesVisuals,
+      });
+
       gsap.to("#hero", {
-        scale: 0.96,
+        scale: 0.97,
         opacity: 0,
-        filter: "blur(4px)",
+        filter: "blur(3px)",
         ease: "none",
         scrollTrigger: {
-          trigger: "#services",
-          start: "top 80%",
-          end: "top 20%",
-          scrub: true,
+          trigger: "#about",
+          start: "top 90%",
+          end: "top 35%",
+          scrub: SCRUB,
+          onLeaveBack: () => gsap.set("#hero", { clearProps: "opacity,filter,scale" }),
         },
       });
 
-      gsap.from("#services", {
-        y: 60,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#services",
-          start: "top 80%",
-          end: "top 20%",
-          scrub: true,
-        },
-      });
+      gsap.fromTo(
+        "#about .section-head",
+        { y: 32, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#about",
+            start: "top 88%",
+            end: "top 55%",
+            scrub: SCRUB,
+            onLeaveBack: () => gsap.set("#about .section-head", { clearProps: "y,opacity" }),
+          },
+        }
+      );
 
-      // SERVICES → VS
-      gsap.to(".services-window", {
-        x: "-100vw",
-        opacity: 0,
-        ease: "power3.in",
-        scrollTrigger: {
-          trigger: "#vs",
-          start: "top 80%",
-          end: "top 30%",
-          scrub: true,
-        },
-      });
+      gsap.fromTo(
+        ".about-card",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#about",
+            start: "top 88%",
+            end: "top 45%",
+            scrub: SCRUB,
+            onLeaveBack: () => gsap.set(".about-card", { clearProps: "y,opacity" }),
+          },
+        }
+      );
 
-      gsap.from(".vs-window", {
-        y: -60,
-        opacity: 0,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#vs",
-          start: "top 80%",
-          end: "top 30%",
-          scrub: true,
-        },
-      });
+      gsap.fromTo(
+        ".vs-window",
+        { y: -32 },
+        {
+          y: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#vs",
+            start: "top 90%",
+            end: "top 50%",
+            scrub: SCRUB,
+            onLeaveBack: () => gsap.set(".vs-window", { clearProps: "y" }),
+          },
+        }
+      );
 
-      // VS → PROCESS
-      gsap.from(".process-window", {
-        x: 80,
-        opacity: 0,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#process",
-          start: "top 80%",
-          end: "top 30%",
-          scrub: true,
-        },
-      });
+      gsap.fromTo(
+        ".process-window",
+        { x: 48, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#process",
+            start: "top 90%",
+            end: "top 48%",
+            scrub: SCRUB,
+            onLeaveBack: () => gsap.set(".process-window", { clearProps: "x,opacity" }),
+          },
+        }
+      );
 
-      // PROCESS → WORK
       gsap.to("body", {
         backgroundColor: "#1a1a1a",
         ease: "none",
         scrollTrigger: {
           trigger: "#work",
-          start: "top 90%",
-          end: "top 30%",
-          scrub: true,
+          start: "top 92%",
+          end: "top 38%",
+          scrub: SCRUB,
         },
       });
 
-      // WORK → TESTIMONIALS
       gsap.to("body", {
         backgroundColor: "#f5f4f0",
         ease: "none",
         scrollTrigger: {
-          trigger: "#testimonials",
-          start: "top 90%",
-          end: "top 50%",
-          scrub: true,
-        },
-      });
-
-      // TESTIMONIALS → CTA — cards clear out
-      gsap.to(".testimonial-card", {
-        x: -40,
-        opacity: 0,
-        stagger: 0.06,
-        ease: "power3.in",
-        scrollTrigger: {
-          trigger: "#cta",
-          start: "top 85%",
-          end: "top 55%",
-          scrub: true,
+          trigger: "#vs",
+          start: "top 92%",
+          end: "top 58%",
+          scrub: SCRUB,
         },
       });
     });
 
-    ScrollTrigger.refresh();
-    return () => ctx.revert();
+    const refresh = () => {
+      ScrollTrigger.refresh();
+      resetServicesVisuals();
+    };
+
+    window.addEventListener("load", refresh);
+    const t = window.setTimeout(refresh, 300);
+
+    return () => {
+      window.removeEventListener("load", refresh);
+      window.clearTimeout(t);
+      ctx.revert();
+    };
   }, [lenis]);
 
   return <>{children}</>;
