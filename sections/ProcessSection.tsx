@@ -67,12 +67,6 @@ const STEPS: { label: string; messages: ProcessMessage[] }[] = [
         text: "Love it. Can we make the hero a little bolder?",
         time: "Day 2",
       },
-      {
-        from: "nexara",
-        text: "Unlimited revisions included — on it now.",
-        time: "Day 2",
-        reaction: { emoji: "🔥", count: 2 },
-      },
     ],
   },
   {
@@ -101,10 +95,9 @@ const NAV_OFFSET = 64;
 const SCROLL_VH_PER_STEP = 0.52;
 
 function processIndexFromProgress(progress: number) {
-  return Math.min(
-    STEPS.length - 1,
-    Math.round(progress * (STEPS.length - 1))
-  );
+  if (STEPS.length <= 1) return 0;
+  const idx = Math.floor(progress * STEPS.length);
+  return Math.min(STEPS.length - 1, Math.max(0, idx));
 }
 
 function processScrollDistance() {
@@ -130,7 +123,9 @@ export function ProcessSection() {
   }, [activeStep]);
 
   useEffect(() => {
-    feedRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    if (feedRef.current) {
+      feedRef.current.scrollTop = 0;
+    }
   }, [activeStep]);
 
   useEffect(() => {
@@ -147,7 +142,7 @@ export function ProcessSection() {
           end: `+=${processScrollDistance()}`,
           pin: true,
           pinSpacing: true,
-          anticipatePin: 0,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const idx = processIndexFromProgress(self.progress);

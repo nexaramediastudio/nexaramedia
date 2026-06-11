@@ -91,23 +91,6 @@ export function ScrollExperience({ children }: { children: React.ReactNode }) {
         }
       );
 
-      gsap.fromTo(
-        ".process-window",
-        { x: 48, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: "#process",
-            start: "top 90%",
-            end: "top 48%",
-            scrub: SCRUB,
-            onLeaveBack: () => gsap.set(".process-window", { clearProps: "x,opacity" }),
-          },
-        }
-      );
-
       gsap.to("body", {
         backgroundColor: "#1a1a1a",
         ease: "none",
