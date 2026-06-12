@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { useLenisInstance } from "./LenisProvider";
 
 const SCRUB = 1.4;
 
@@ -13,104 +12,117 @@ function resetServicesVisuals() {
 }
 
 export function ScrollExperience({ children }: { children: React.ReactNode }) {
-  const lenis = useLenisInstance();
-
   useEffect(() => {
-    if (!lenis) return;
-
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: "#services",
-        start: "top bottom",
-        end: "bottom top",
-        onEnter: resetServicesVisuals,
-        onEnterBack: resetServicesVisuals,
-      });
+      const mm = gsap.matchMedia();
 
-      gsap.to("#hero", {
-        scale: 0.97,
-        opacity: 0,
-        filter: "blur(3px)",
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#about",
-          start: "top 90%",
-          end: "top 35%",
-          scrub: SCRUB,
-          onLeaveBack: () => gsap.set("#hero", { clearProps: "opacity,filter,scale" }),
-        },
-      });
+      mm.add("(min-width: 900px)", () => {
+        ScrollTrigger.create({
+          trigger: "#services",
+          start: "top bottom",
+          end: "bottom top",
+          onEnter: resetServicesVisuals,
+          onEnterBack: resetServicesVisuals,
+        });
 
-      gsap.fromTo(
-        "#about .section-head",
-        { y: 32, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
+        gsap.to("#hero", {
+          scale: 0.97,
+          opacity: 0,
+          filter: "blur(3px)",
           ease: "none",
           scrollTrigger: {
             trigger: "#about",
-            start: "top 88%",
-            end: "top 55%",
+            start: "top 90%",
+            end: "top 35%",
             scrub: SCRUB,
-            onLeaveBack: () => gsap.set("#about .section-head", { clearProps: "y,opacity" }),
+            onLeaveBack: () => gsap.set("#hero", { clearProps: "opacity,filter,scale" }),
           },
-        }
-      );
+        });
 
-      gsap.fromTo(
-        ".about-card",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
+        gsap.fromTo(
+          "#about .section-head",
+          { y: 32, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#about",
+              start: "top 88%",
+              end: "top 55%",
+              scrub: SCRUB,
+              onLeaveBack: () => gsap.set("#about .section-head", { clearProps: "y,opacity" }),
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".about-card",
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#about",
+              start: "top 88%",
+              end: "top 45%",
+              scrub: SCRUB,
+              onLeaveBack: () => gsap.set(".about-card", { clearProps: "y,opacity" }),
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".vs-window",
+          { y: -32 },
+          {
+            y: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: "#vs",
+              start: "top 90%",
+              end: "top 50%",
+              scrub: SCRUB,
+              onLeaveBack: () => gsap.set(".vs-window", { clearProps: "y" }),
+            },
+          }
+        );
+
+        gsap.to("body", {
+          backgroundColor: "#1a1a1a",
           ease: "none",
           scrollTrigger: {
-            trigger: "#about",
-            start: "top 88%",
-            end: "top 45%",
+            trigger: "#work",
+            start: "top 92%",
+            end: "top 38%",
             scrub: SCRUB,
-            onLeaveBack: () => gsap.set(".about-card", { clearProps: "y,opacity" }),
           },
-        }
-      );
+        });
 
-      gsap.fromTo(
-        ".vs-window",
-        { y: -32 },
-        {
-          y: 0,
-          ease: "power2.out",
+        gsap.to("body", {
+          backgroundColor: "#f5f4f0",
+          ease: "none",
           scrollTrigger: {
             trigger: "#vs",
-            start: "top 90%",
-            end: "top 50%",
+            start: "top 92%",
+            end: "top 58%",
             scrub: SCRUB,
-            onLeaveBack: () => gsap.set(".vs-window", { clearProps: "y" }),
           },
-        }
-      );
-
-      gsap.to("body", {
-        backgroundColor: "#1a1a1a",
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#work",
-          start: "top 92%",
-          end: "top 38%",
-          scrub: SCRUB,
-        },
+        });
       });
 
-      gsap.to("body", {
-        backgroundColor: "#f5f4f0",
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#vs",
-          start: "top 92%",
-          end: "top 58%",
-          scrub: SCRUB,
-        },
+      mm.add("(max-width: 899px)", () => {
+        gsap.set("body", { backgroundColor: "#f5f4f0", clearProps: "filter" });
+        gsap.set("#hero", { clearProps: "opacity,filter,scale" });
+
+        ScrollTrigger.create({
+          trigger: "#work",
+          start: "top 60%",
+          end: "bottom 40%",
+          onEnter: () => document.body.classList.add("is-dark-section"),
+          onLeaveBack: () => document.body.classList.remove("is-dark-section"),
+        });
       });
     });
 
@@ -120,14 +132,17 @@ export function ScrollExperience({ children }: { children: React.ReactNode }) {
     };
 
     window.addEventListener("load", refresh);
+    window.addEventListener("orientationchange", refresh);
     const t = window.setTimeout(refresh, 300);
 
     return () => {
       window.removeEventListener("load", refresh);
+      window.removeEventListener("orientationchange", refresh);
       window.clearTimeout(t);
+      document.body.classList.remove("is-dark-section");
       ctx.revert();
     };
-  }, [lenis]);
+  }, []);
 
   return <>{children}</>;
 }

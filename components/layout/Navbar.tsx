@@ -63,7 +63,16 @@ export function Navbar() {
       }
     );
 
+    const mm = gsap.matchMedia();
+    mm.add("(max-width: 899px)", () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      gsap.set(inner, { clearProps: "y,opacity" });
+      inner.style.pointerEvents = "auto";
+    });
+
     return () => {
+      mm.revert();
       tween.scrollTrigger?.kill();
       tween.kill();
     };
