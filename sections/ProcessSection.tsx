@@ -7,6 +7,7 @@ import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { MacWindow } from "@/components/ui/MacWindow";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { scrollTabStrip } from "@/lib/scrollTabStrip";
 
 type ProcessMessage = {
   from: "you" | "nexara";
@@ -130,10 +131,7 @@ export function ProcessSection() {
   }, [activeStep]);
 
   useEffect(() => {
-    const container = stepsRef.current;
-    if (!container) return;
-    const activeTab = container.querySelector(".process-step-tab.is-active");
-    activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    scrollTabStrip(stepsRef.current, ".process-step-tab.is-active");
   }, [activeStep]);
 
   useEffect(() => {
@@ -230,7 +228,7 @@ export function ProcessSection() {
                 ref={stepsRef}
                 className="process-steps"
                 aria-label="Process steps"
-                data-lenis-prevent
+                data-lenis-prevent-touch
               >
                 {STEPS.map((s, i) => (
                   <button

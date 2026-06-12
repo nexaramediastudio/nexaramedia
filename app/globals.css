@@ -42,6 +42,20 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
+.lenis.lenis-smooth [data-lenis-prevent],
+.lenis.lenis-smooth [data-lenis-prevent-touch],
+.lenis.lenis-smooth [data-lenis-prevent-wheel] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 body {
   font-family: "Figtree", sans-serif;
   font-weight: 400;
@@ -1802,6 +1816,19 @@ section {
 }
 
 @media (max-width: 899px) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .section-pinned {
+    overflow: hidden;
+  }
+
   .process-steps {
     display: flex;
     flex-wrap: nowrap;

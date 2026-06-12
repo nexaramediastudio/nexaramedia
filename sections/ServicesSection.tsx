@@ -9,6 +9,7 @@ import { SectionHead } from "@/components/ui/SectionHead";
 import { ServiceIcon, type ServiceIconId } from "@/components/ui/ServiceIcon";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
+import { scrollTabStrip } from "@/lib/scrollTabStrip";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 const SERVICES = [
@@ -110,10 +111,7 @@ export function ServicesSection() {
   }, [active]);
 
   useEffect(() => {
-    const container = mobileTabsRef.current;
-    if (!container) return;
-    const activeTab = container.querySelector(".services-layer-item.is-active");
-    activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    scrollTabStrip(mobileTabsRef.current, ".services-layer-item.is-active");
   }, [active]);
 
   const selectService = (index: number) => {
@@ -160,43 +158,43 @@ export function ServicesSection() {
             }
           },
         });
+
+        gsap.fromTo(
+          ".services-window",
+          { scale: 0.96, opacity: 0.5 },
+          {
+            scale: 1,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#services",
+              start: "top 96%",
+              end: "top 52%",
+              scrub: 2,
+              onLeaveBack: () =>
+                gsap.set(".services-window", { clearProps: "opacity,scale" }),
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".services-pin .section-head",
+          { y: 20, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#services",
+              start: "top 96%",
+              end: "top 58%",
+              scrub: 2,
+              onLeaveBack: () =>
+                gsap.set(".services-pin .section-head", { clearProps: "y,opacity" }),
+            },
+          }
+        );
       });
-
-      gsap.fromTo(
-        ".services-window",
-        { scale: 0.96, opacity: 0.5 },
-        {
-          scale: 1,
-          opacity: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#services",
-            start: "top 96%",
-            end: "top 52%",
-            scrub: 2,
-            onLeaveBack: () =>
-              gsap.set(".services-window", { clearProps: "opacity,scale" }),
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ".services-pin .section-head",
-        { y: 20, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#services",
-            start: "top 96%",
-            end: "top 58%",
-            scrub: 2,
-            onLeaveBack: () =>
-              gsap.set(".services-pin .section-head", { clearProps: "y,opacity" }),
-          },
-        }
-      );
     }, sectionRef);
 
     const refresh = () => ScrollTrigger.refresh();
@@ -219,7 +217,7 @@ export function ServicesSection() {
             <div
               ref={mobileTabsRef}
               className="services-mobile-tabs"
-              data-lenis-prevent
+              data-lenis-prevent-touch
               role="tablist"
               aria-label="Services"
             >
