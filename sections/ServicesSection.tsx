@@ -14,6 +14,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 const SERVICES = [
   {
     num: "01",
+    tabLabel: "Social",
     name: "Social Media Management",
     icon: "social" as ServiceIconId,
     desc: "Strategy, content, and community management that keeps your brand visible and growing every day.",
@@ -23,6 +24,7 @@ const SERVICES = [
   },
   {
     num: "02",
+    tabLabel: "Video",
     name: "Video Production",
     icon: "video" as ServiceIconId,
     desc: "From concept to final cut — brand films, social reels, and product videos that stop the scroll.",
@@ -32,6 +34,7 @@ const SERVICES = [
   },
   {
     num: "03",
+    tabLabel: "Web",
     name: "Web Development",
     icon: "web" as ServiceIconId,
     desc: "Fast, beautiful websites and web apps built to convert visitors into customers.",
@@ -41,6 +44,7 @@ const SERVICES = [
   },
   {
     num: "04",
+    tabLabel: "AI",
     name: "AI Automation",
     icon: "ai" as ServiceIconId,
     desc: "Custom AI workflows and automations that eliminate repetitive work and save your team hours.",
@@ -50,6 +54,7 @@ const SERVICES = [
   },
   {
     num: "05",
+    tabLabel: "Brand",
     name: "Branding & Identity",
     icon: "brand" as ServiceIconId,
     desc: "Logo, visual language, and brand guidelines that make your business impossible to forget.",
@@ -59,6 +64,7 @@ const SERVICES = [
   },
   {
     num: "06",
+    tabLabel: "Ads",
     name: "Ad Campaigns",
     icon: "ads" as ServiceIconId,
     desc: "Paid social and search campaigns built for measurable ROI, not vanity metrics.",
@@ -68,6 +74,7 @@ const SERVICES = [
   },
   {
     num: "07",
+    tabLabel: "SEO",
     name: "SEO",
     icon: "seo" as ServiceIconId,
     desc: "Technical and content SEO that gets your brand found by the people actively searching for you.",
@@ -92,6 +99,7 @@ export function ServicesSection() {
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const mobileTabsRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
   const pinTriggerRef = useRef<ScrollTrigger | null>(null);
 
@@ -99,6 +107,13 @@ export function ServicesSection() {
 
   useEffect(() => {
     activeRef.current = active;
+  }, [active]);
+
+  useEffect(() => {
+    const container = mobileTabsRef.current;
+    if (!container) return;
+    const activeTab = container.querySelector(".services-layer-item.is-active");
+    activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [active]);
 
   const selectService = (index: number) => {
@@ -201,18 +216,26 @@ export function ServicesSection() {
 
         <div className="services-window-wrap">
           <MacWindow title="nexara-services.fig" className="services-window">
-            <div className="services-mobile-tabs">
+            <div
+              ref={mobileTabsRef}
+              className="services-mobile-tabs"
+              data-lenis-prevent
+              role="tablist"
+              aria-label="Services"
+            >
               {SERVICES.map((s, i) => (
                 <button
                   key={s.num}
                   type="button"
+                  role="tab"
+                  aria-selected={active === i}
                   className={`services-layer-item ${active === i ? "is-active" : ""}`}
                   onClick={() => selectService(i)}
                 >
                   <span className="services-layer-icon">
                     <ServiceIcon id={s.icon} size={14} />
                   </span>
-                  {s.name.split(" ")[0]}
+                  <span className="services-mobile-tab-label">{s.tabLabel}</span>
                 </button>
               ))}
             </div>

@@ -113,6 +113,7 @@ export function ProcessSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const feedRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLElement>(null);
   const activeRef = useRef(0);
   const pinTriggerRef = useRef<ScrollTrigger | null>(null);
 
@@ -126,6 +127,13 @@ export function ProcessSection() {
     if (feedRef.current) {
       feedRef.current.scrollTop = 0;
     }
+  }, [activeStep]);
+
+  useEffect(() => {
+    const container = stepsRef.current;
+    if (!container) return;
+    const activeTab = container.querySelector(".process-step-tab.is-active");
+    activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [activeStep]);
 
   useEffect(() => {
@@ -218,11 +226,18 @@ export function ProcessSection() {
                 </div>
               </div>
 
-              <nav className="process-steps" aria-label="Process steps">
+              <nav
+                ref={stepsRef}
+                className="process-steps"
+                aria-label="Process steps"
+                data-lenis-prevent
+              >
                 {STEPS.map((s, i) => (
                   <button
                     key={s.label}
                     type="button"
+                    role="tab"
+                    aria-selected={activeStep === i}
                     className={`process-step-tab ${activeStep === i ? "is-active" : ""} ${i < activeStep ? "is-done" : ""}`}
                     onClick={() => selectStep(i)}
                     aria-current={activeStep === i ? "step" : undefined}
