@@ -20,6 +20,7 @@ export function HeroSection() {
         ease: "power3.out",
         delay: 0.15,
       });
+
       gsap.from(".hero-subtitle", { y: 24, opacity: 0, duration: 0.7, delay: 0.55 });
       gsap.from(".hero-buttons", { y: 20, opacity: 0, duration: 0.6, delay: 0.75 });
     }, sectionRef);

@@ -1,11 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+
+const Galaxy = dynamic(() => import("@/components/ui/Galaxy"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const PROJECTS = [
   {
@@ -66,38 +72,56 @@ export function WorkSection() {
 
   return (
     <section id="work" ref={sectionRef} className="work-section">
-      <SectionHead number="04" kicker="selected projects" title="Featured work" dark />
-
-      <div className="work-grid">
-        {PROJECTS.map((p, i) => (
-          <Link
-            key={p.num}
-            href="#cta"
-            onClick={goCta}
-            className={`work-card ${i === 0 ? "work-card--feature" : ""}`}
-          >
-            <div className="work-card-preview" aria-hidden>
-              {p.bars.map((w, j) => (
-                <span key={j} className="work-preview-bar" style={{ width: `${w}%` }} />
-              ))}
-            </div>
-
-            <div className="work-card-body">
-              <div className="work-card-top">
-                <span className="work-card-num">/{p.num}</span>
-                <span className="work-card-type">{p.type}</span>
-              </div>
-              <h3 className="work-card-name">{p.name}</h3>
-              <p className="work-card-meta">{p.meta}</p>
-            </div>
-          </Link>
-        ))}
+      <div className="work-section-bg" aria-hidden>
+        <Galaxy
+          starSpeed={0.5}
+          density={1}
+          hueShift={140}
+          speed={1}
+          glowIntensity={0.3}
+          saturation={0}
+          mouseRepulsion
+          repulsionStrength={2}
+          twinkleIntensity={0.3}
+          rotationSpeed={0.1}
+          transparent
+        />
       </div>
 
-      <div className="work-more-wrap">
-        <Link href="#cta" onClick={goCta} className="work-more">
-          See more work →
-        </Link>
+      <div className="work-section-inner">
+        <SectionHead number="04" kicker="selected projects" title="Featured work" dark />
+
+        <div className="work-grid">
+          {PROJECTS.map((p, i) => (
+            <Link
+              key={p.num}
+              href="#cta"
+              onClick={goCta}
+              className={`work-card ${i === 0 ? "work-card--feature" : ""}`}
+            >
+              <div className="work-card-preview" aria-hidden>
+                {p.bars.map((w, j) => (
+                  <span key={j} className="work-preview-bar" style={{ width: `${w}%` }} />
+                ))}
+              </div>
+
+              <div className="work-card-body">
+                <div className="work-card-top">
+                  <span className="work-card-num">/{p.num}</span>
+                  <span className="work-card-type">{p.type}</span>
+                </div>
+                <h3 className="work-card-name">{p.name}</h3>
+                <p className="work-card-meta">{p.meta}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="work-more-wrap">
+          <Link href="#cta" onClick={goCta} className="work-more">
+            See more work →
+          </Link>
+        </div>
       </div>
     </section>
   );

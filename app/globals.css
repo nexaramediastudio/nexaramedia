@@ -67,6 +67,30 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Site-wide liquid background ───────────────────────── */
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.site-bg__base {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg);
+}
+
+.site-bg .liquid-ether-container {
+  position: absolute;
+  inset: 0;
+}
+
+body:has(.site-bg)::before {
+  display: none;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -431,6 +455,7 @@ section {
 /* ── Hero ──────────────────────────────────────────────── */
 #hero {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 120px 32px 80px;
   display: flex;
   flex-direction: column;
@@ -438,17 +463,68 @@ section {
   justify-content: center;
   text-align: center;
   background: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+#hero.hero-has-ascii {
+  padding: 88px 32px 80px;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.hero-headline--ascii {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: clamp(300px, 42vw, 480px);
+  margin: 0 auto -40px;
+  flex-shrink: 0;
+}
+
+#hero.hero-has-ascii .hero-subtitle {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+#hero.hero-has-ascii .hero-buttons {
+  margin-top: 32px;
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+.hero-headline--ascii .ascii-text-host {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero-headline {
   position: relative;
   z-index: 2;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
   font-weight: 900;
   font-size: clamp(72px, 11vw, 128px);
   letter-spacing: -0.045em;
   line-height: 0.92;
   color: var(--color-dark);
-  max-width: 14ch;
 }
 
 .hero-headline .accent {
@@ -2174,9 +2250,31 @@ section {
 
 /* ── Work (dark portfolio) ─────────────────────────────── */
 .work-section {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
   background: var(--color-dark);
   color: #fff;
   padding: var(--space-section) 32px 80px;
+  overflow: hidden;
+}
+
+.work-section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--color-dark);
+  pointer-events: auto;
+}
+
+.work-section-inner {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.work-section-inner * {
+  pointer-events: auto;
 }
 
 .work-section .section-head {
@@ -2430,6 +2528,7 @@ section {
 
   .hero-headline {
     font-size: clamp(48px, 12vw, 72px);
+    max-width: 14ch;
   }
 
   .hero-float-card {
@@ -2446,4 +2545,13 @@ section {
     gap: 12px;
     padding: 8px 16px;
   }
+}
+
+/* Liquid ether: full site except Featured Work (#work) */
+body:has(.site-bg) main > section:not(#work) {
+  background: transparent !important;
+}
+
+body:has(.site-bg) #work.work-section {
+  background: var(--color-dark) !important;
 }
