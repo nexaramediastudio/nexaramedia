@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { LoadingScreen } from "@/components/layout/LoadingScreen";
 
 const siteUrl = "https://www.nexaramediastudio.com";
 
@@ -75,6 +76,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         <LenisProvider>
+          <LoadingScreen />
           <CustomCursor />
           {children}
         </LenisProvider>

@@ -47,12 +47,12 @@ export function useLenis(): Lenis | null {
 
     const setupLenis = () => {
       instance = new Lenis({
-        duration: 2.2,
+        duration: 1.6,
         easing: LENIS_EASE,
         orientation: "vertical",
         smoothWheel: true,
         syncTouch: false,
-        wheelMultiplier: 0.55,
+        wheelMultiplier: 0.85,
         touchMultiplier: 1,
         infinite: false,
       });
@@ -62,32 +62,14 @@ export function useLenis(): Lenis | null {
 
       instance.on("scroll", ScrollTrigger.update);
 
-      ScrollTrigger.scrollerProxy(document.documentElement, {
-        scrollTop(value) {
-          if (arguments.length && value !== undefined) {
-            instance?.scrollTo(value, { immediate: true });
-          }
-          return instance?.scroll ?? 0;
-        },
-        getBoundingClientRect() {
-          return {
-            top: 0,
-            left: 0,
-            width: window.innerWidth,
-            height: window.innerHeight,
-          };
-        },
-        pinType: document.documentElement.style.transform ? "transform" : "fixed",
-      });
-
-      ScrollTrigger.defaults({ scroller: document.documentElement });
-
       raf = (time: number) => {
         instance?.raf(time * 1000);
       };
 
       gsap.ticker.add(raf);
       gsap.ticker.lagSmoothing(0);
+
+      ScrollTrigger.defaults({ scroller: window });
 
       window.addEventListener("load", refresh);
       refreshTimer = window.setTimeout(refresh, 200);
@@ -96,9 +78,7 @@ export function useLenis(): Lenis | null {
 
     const applyMode = () => {
       const desktop = window.matchMedia(DESKTOP_MQ).matches;
-      const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       if (instance) {
         teardownLenis();

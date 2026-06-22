@@ -148,7 +148,7 @@ export function ProcessSection() {
           end: `+=${processScrollDistance()}`,
           pin: true,
           pinSpacing: true,
-          anticipatePin: 1,
+          anticipatePin: 0,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const idx = processIndexFromProgress(self.progress);

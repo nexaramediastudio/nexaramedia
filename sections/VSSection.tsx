@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { Check, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import { MacWindow } from "@/components/ui/MacWindow";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
@@ -108,15 +108,20 @@ export function VSSection() {
           </div>
 
           <div className="vs-footer">
+            <p className="vs-footer-copy">
+              Same brief, same budget.{" "}
+              <span className="vs-footer-accent">Wildly different outcome.</span>
+            </p>
             <Link
               href="#work"
               onClick={(e) => {
                 e.preventDefault();
                 scrollToSection("work", lenis);
               }}
-              className="btn-primary-dark"
+              className="vs-footer-btn"
             >
-              See our work
+              See the work
+              <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
             </Link>
           </div>
         </MacWindow>

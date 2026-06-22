@@ -13,7 +13,7 @@ export function scrollToSection(
   if (lenis) {
     lenis.scrollTo(el, {
       offset,
-      duration: 2.2,
+      duration: 1.4,
       easing: SCROLL_EASE,
     });
     return;

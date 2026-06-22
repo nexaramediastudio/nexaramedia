@@ -25,20 +25,6 @@ export function ScrollExperience({ children }: { children: React.ReactNode }) {
           onEnterBack: resetServicesVisuals,
         });
 
-        gsap.to("#hero", {
-          scale: 0.97,
-          opacity: 0,
-          filter: "blur(3px)",
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#about",
-            start: "top 90%",
-            end: "top 35%",
-            scrub: SCRUB,
-            onLeaveBack: () => gsap.set("#hero", { clearProps: "opacity,filter,scale" }),
-          },
-        });
-
         gsap.fromTo(
           "#about .section-head",
           { y: 32, opacity: 0 },
@@ -72,57 +58,11 @@ export function ScrollExperience({ children }: { children: React.ReactNode }) {
             },
           }
         );
-
-        gsap.fromTo(
-          ".vs-window",
-          { y: -32 },
-          {
-            y: 0,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: "#vs",
-              start: "top 90%",
-              end: "top 50%",
-              scrub: SCRUB,
-              onLeaveBack: () => gsap.set(".vs-window", { clearProps: "y" }),
-            },
-          }
-        );
-
-        gsap.to("body", {
-          backgroundColor: "#1a1a1a",
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#work",
-            start: "top 92%",
-            end: "top 38%",
-            scrub: SCRUB,
-          },
-        });
-
-        gsap.to("body", {
-          backgroundColor: "#f5f4f0",
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#vs",
-            start: "top 92%",
-            end: "top 58%",
-            scrub: SCRUB,
-          },
-        });
       });
 
       mm.add("(max-width: 899px)", () => {
-        gsap.set("body", { backgroundColor: "#f5f4f0", clearProps: "filter" });
+        gsap.set("body", { clearProps: "filter" });
         gsap.set("#hero", { clearProps: "opacity,filter,scale" });
-
-        ScrollTrigger.create({
-          trigger: "#work",
-          start: "top 60%",
-          end: "bottom 40%",
-          onEnter: () => document.body.classList.add("is-dark-section"),
-          onLeaveBack: () => document.body.classList.remove("is-dark-section"),
-        });
       });
     });
 
