@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap } from "@/lib/gsap";
@@ -12,17 +13,31 @@ export function HeroSection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".hero-word", {
-        y: 48,
+      gsap.from(".hero-eyebrow, .hero-intro, .hero-buttons", {
+        y: 16,
         opacity: 0,
-        stagger: 0.1,
-        duration: 0.85,
+        duration: 0.6,
+        stagger: 0.08,
+        delay: 0.1,
+        ease: "power3.out",
+      });
+
+      gsap.from(".hero-word", {
+        y: 40,
+        opacity: 0,
+        stagger: 0.09,
+        duration: 0.8,
         ease: "power3.out",
         delay: 0.15,
       });
 
-      gsap.from(".hero-subtitle", { y: 24, opacity: 0, duration: 0.7, delay: 0.55 });
-      gsap.from(".hero-buttons", { y: 20, opacity: 0, duration: 0.6, delay: 0.75 });
+      gsap.from(".hero-footer", {
+        y: 10,
+        opacity: 0,
+        duration: 0.55,
+        delay: 0.55,
+        ease: "power3.out",
+      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -30,35 +45,70 @@ export function HeroSection() {
 
   return (
     <section id="hero" ref={sectionRef}>
-      <h1 className="hero-headline">
-        <span className="hero-word block">BRANDS THAT</span>
-        <span className="hero-word block accent">CANNOT</span>
-        <span className="hero-word block">BE IGNORED.</span>
-      </h1>
+      <div className="hero-content">
+        <div className="hero-copy">
+          <p className="hero-eyebrow">
+            Nexara <span aria-hidden>•</span> Design + Dev Studio
+          </p>
 
-      <p className="hero-subtitle">Premium creative for brands that mean business.</p>
+          <h1 className="hero-headline">
+            <span className="hero-headline-line hero-word">REMEMBERED</span>
+            <span className="hero-headline-line hero-word">
+              <span className="accent">PREFERRED</span>
+            </span>
+          </h1>
 
-      <div className="hero-buttons">
-        <Link
-          href="#work"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("work", lenis);
-          }}
-          className="btn-primary-dark"
-        >
-          See our work
-        </Link>
-        <Link
-          href="#cta"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("cta", lenis);
-          }}
-          className="btn-outline-dark"
-        >
-          Start a project
-        </Link>
+          <div className="hero-intro">
+            <p className="hero-tagline">
+              We don&apos;t do forgettable <span aria-hidden>+</span>
+            </p>
+            <div className="hero-subtitle-select">
+              <span className="hero-select-handle hero-select-handle--tl" aria-hidden />
+              <span className="hero-select-handle hero-select-handle--tr" aria-hidden />
+              <span className="hero-select-handle hero-select-handle--bl" aria-hidden />
+              <span className="hero-select-handle hero-select-handle--br" aria-hidden />
+              <p className="hero-subtitle">
+                <span className="hero-subtitle-line">Most brands you can scroll right past.</span>
+                <span className="hero-subtitle-line">The ones we build do this to your eyes.</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="hero-buttons">
+            <Link
+              href="#cta"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("cta", lenis);
+              }}
+              className="hero-btn hero-btn--primary"
+            >
+              Start a project
+              <ArrowRight size={17} strokeWidth={2.25} aria-hidden />
+            </Link>
+            <Link
+              href="#work"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("work", lenis);
+              }}
+              className="hero-btn hero-btn--secondary"
+            >
+              See our work
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero-footer">
+        <div className="hero-corner hero-corner--bl">
+          <p>Based in Colombo</p>
+          <p>Working worldwide</p>
+        </div>
+        <div className="hero-corner hero-corner--br">
+          <p>Open for projects</p>
+          <p>Reply within 48 hours</p>
+        </div>
       </div>
     </section>
   );

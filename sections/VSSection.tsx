@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { Check, X } from "lucide-react";
 import { MacWindow } from "@/components/ui/MacWindow";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
@@ -36,10 +37,10 @@ export function VSSection() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".vs-section .section-head, .vs-window", {
+      gsap.from(".vs-section .section-head, .vs-window-wrap", {
         y: 36,
         opacity: 0,
-        stagger: 0.15,
+        stagger: 0.12,
         duration: 0.85,
         ease: "power3.out",
         scrollTrigger: {
@@ -58,6 +59,7 @@ export function VSSection() {
     <section id="vs" ref={sectionRef} className="vs-section">
       <SectionHead
         number="05"
+        kicker="the difference"
         title={
           <>
             Same brief.
@@ -65,6 +67,7 @@ export function VSSection() {
             <span className="section-title-accent">Different outcome.</span>
           </>
         }
+        meta="side by side"
         titleClassName="section-title--statement"
       />
 
@@ -77,14 +80,17 @@ export function VSSection() {
                 <ul className="vs-list">
                   {THEM.points.map((point) => (
                     <li key={point} className="vs-list-item vs-list-no">
-                      {point}
+                      <X className="vs-list-icon" size={17} strokeWidth={2.25} aria-hidden />
+                      <span>{point}</span>
                     </li>
                   ))}
                 </ul>
               </article>
 
               <div className="vs-divider" aria-hidden>
+                <span className="vs-divider-line" />
                 <span className="vs-divider-badge">vs</span>
+                <span className="vs-divider-line" />
               </div>
 
               <article className="vs-card vs-card-us">
@@ -92,7 +98,8 @@ export function VSSection() {
                 <ul className="vs-list">
                   {US.points.map((point) => (
                     <li key={point} className="vs-list-item vs-list-yes">
-                      {point}
+                      <Check className="vs-list-icon" size={17} strokeWidth={2.5} aria-hidden />
+                      <span>{point}</span>
                     </li>
                   ))}
                 </ul>
@@ -107,9 +114,9 @@ export function VSSection() {
                 e.preventDefault();
                 scrollToSection("work", lenis);
               }}
-              className="vs-cta"
+              className="btn-primary-dark"
             >
-              See the work
+              See our work
             </Link>
           </div>
         </MacWindow>

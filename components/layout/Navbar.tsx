@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Mail } from "lucide-react";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap } from "@/lib/gsap";
@@ -12,11 +13,12 @@ const NAV_LINKS = [
   { id: "work", label: "Work" },
 ];
 
+const HERO_EMAIL = "nexaramediastudio@gmail.com";
 const NAV_SCRUB = 1.6;
 
 export function Navbar() {
   const lenis = useLenisInstance();
-  const navInnerRef = useRef<HTMLDivElement>(null);
+  const navRailRef = useRef<HTMLDivElement>(null);
   const menuOpenRef = useRef(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -25,12 +27,12 @@ export function Navbar() {
   }, [menuOpen]);
 
   useEffect(() => {
-    const inner = navInnerRef.current;
+    const rail = navRailRef.current;
     const hero = document.getElementById("hero");
-    if (!inner || !hero) return;
+    if (!rail || !hero) return;
 
     gsap.fromTo(
-      inner,
+      rail,
       { opacity: 0, y: -12 },
       {
         opacity: 1,
@@ -42,7 +44,7 @@ export function Navbar() {
     );
 
     const tween = gsap.fromTo(
-      inner,
+      rail,
       { y: 0, opacity: 1 },
       {
         y: -20,
@@ -54,7 +56,7 @@ export function Navbar() {
           end: "bottom top+=80",
           scrub: NAV_SCRUB,
           onUpdate: (self) => {
-            inner.style.pointerEvents = self.progress > 0.9 ? "none" : "auto";
+            rail.style.pointerEvents = self.progress > 0.9 ? "none" : "auto";
             if (self.progress > 0.25 && menuOpenRef.current) {
               setMenuOpen(false);
             }
@@ -67,8 +69,8 @@ export function Navbar() {
     mm.add("(max-width: 899px)", () => {
       tween.scrollTrigger?.kill();
       tween.kill();
-      gsap.set(inner, { clearProps: "y,opacity" });
-      inner.style.pointerEvents = "auto";
+      gsap.set(rail, { clearProps: "y,opacity" });
+      rail.style.pointerEvents = "auto";
     });
 
     return () => {
@@ -94,38 +96,50 @@ export function Navbar() {
   return (
     <>
       <nav className="site-nav" aria-label="Main">
-        <div ref={navInnerRef} className="site-nav-inner">
-          <Link href="#hero" onClick={(e) => go(e, "hero")} className="site-nav-logo">
-            Nexara
-          </Link>
-
-          <div className="site-nav-links">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.id}
-                href={`#${link.id}`}
-                onClick={(e) => go(e, link.id)}
-                className="site-nav-link"
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div ref={navRailRef} className="site-nav-rail">
+          <div className="site-nav-side hero-pill site-nav-side--left">
+            <span className="hero-meta-dot" aria-hidden />
+            <span>Available for projects</span>
           </div>
 
-          <Link href="#cta" onClick={(e) => go(e, "cta")} className="site-nav-cta hidden md:inline-flex">
-            Start a Project
-          </Link>
+          <div className="site-nav-inner">
+            <Link href="#hero" onClick={(e) => go(e, "hero")} className="site-nav-logo">
+              Nexara
+            </Link>
 
-          <button
-            type="button"
-            className="site-nav-menu-btn md:hidden"
-            aria-label="Menu"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+            <div className="site-nav-links">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => go(e, link.id)}
+                  className="site-nav-link"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            <Link href="#cta" onClick={(e) => go(e, "cta")} className="site-nav-cta hidden md:inline-flex">
+              Start a Project
+            </Link>
+
+            <button
+              type="button"
+              className="site-nav-menu-btn md:hidden"
+              aria-label="Menu"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+
+          <a href={`mailto:${HERO_EMAIL}`} className="site-nav-side hero-pill site-nav-side--right">
+            <Mail size={14} strokeWidth={2.25} aria-hidden />
+            <span className="site-nav-email">{HERO_EMAIL}</span>
+          </a>
         </div>
       </nav>
 
