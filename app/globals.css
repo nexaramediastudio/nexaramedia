@@ -423,6 +423,87 @@ section {
   border-bottom: 1px solid var(--color-border);
 }
 
+/* ── Mobile status bar (mobile only) ───────────────────── */
+.mobile-status-bar {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .mobile-status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 44px;
+    padding: 0 14px;
+    background: rgba(245, 244, 240, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-status-bar__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex-shrink: 0;
+    text-decoration: none;
+    color: var(--color-dark);
+  }
+
+  .mobile-status-bar__logo {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .mobile-status-bar__name {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .mobile-status-bar__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .mobile-status-bar__live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22);
+  }
+
+  .mobile-status-bar__live-text {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-dark);
+    white-space: nowrap;
+  }
+
+  .site-nav {
+    top: 52px;
+  }
+}
+
 /* ── macOS Window ──────────────────────────────────────── */
 .mac-window {
   width: min(94vw, 1040px);
@@ -2852,19 +2933,23 @@ section {
 
 @media (max-width: 899px) {
   #hero {
-    height: auto;
+    height: 100dvh;
+    height: 100svh;
     min-height: 100dvh;
     min-height: 100svh;
-    padding: 76px 18px 18px;
+    padding: 104px 12px 18px;
+    grid-template-rows: 1fr auto;
   }
 
   .hero-content {
     width: 100%;
+    justify-content: center;
+    padding-top: 0;
   }
 
   .hero-copy {
     width: 100%;
-    padding: 0 6px;
+    padding: 0 4px;
     box-sizing: border-box;
   }
 }
@@ -2890,11 +2975,11 @@ section {
   .hero-headline {
     width: 100%;
     max-width: 100%;
-    font-size: clamp(34px, 10.5vw, 46px);
-    letter-spacing: -0.03em;
-    margin-bottom: 16px;
-    line-height: 0.92;
-    padding: 0 10px;
+    font-size: clamp(44px, 15.8vw, 62px);
+    letter-spacing: -0.045em;
+    margin-bottom: 14px;
+    line-height: 0.9;
+    padding: 0 6px;
     box-sizing: border-box;
   }
 
@@ -2905,11 +2990,11 @@ section {
   }
 
   .hero-eyebrow {
-    font-size: 7.5px;
-    letter-spacing: 0.14em;
-    margin-bottom: 14px;
-    padding: 0 10px;
-    line-height: 1.45;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+    padding: 0 6px;
+    line-height: 1.4;
     max-width: 100%;
     box-sizing: border-box;
   }
@@ -2994,17 +3079,18 @@ section {
 
 @media (max-width: 390px) {
   #hero {
-    padding: 72px 14px 14px;
+    padding: 100px 10px 14px;
   }
 
   .hero-headline {
-    font-size: clamp(30px, 9.8vw, 38px);
-    padding: 0 6px;
+    font-size: clamp(40px, 16.2vw, 54px);
+    padding: 0 4px;
   }
 
   .hero-eyebrow {
     font-size: 7px;
     letter-spacing: 0.12em;
+    margin-bottom: 10px;
   }
 
   .hero-corner {

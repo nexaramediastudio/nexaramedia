@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import { MobileStatusBar } from "@/components/layout/MobileStatusBar";
 import { useLenisInstance } from "@/components/providers/LenisProvider";
 import { scrollToSection } from "@/lib/scrollTo";
 import { gsap } from "@/lib/gsap";
@@ -95,6 +96,8 @@ export function Navbar() {
 
   return (
     <>
+      <MobileStatusBar />
+
       <nav className="site-nav" aria-label="Main">
         <div ref={navRailRef} className="site-nav-rail">
           <div className="site-nav-side hero-pill site-nav-side--left">
