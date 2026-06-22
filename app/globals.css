@@ -31,6 +31,8 @@
 
 html {
   scroll-behavior: auto;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 html.lenis,
@@ -2937,20 +2939,27 @@ section {
     height: 100svh;
     min-height: 100dvh;
     min-height: 100svh;
-    padding: 104px 12px 18px;
+    width: 100%;
+    max-width: 100%;
+    padding: 104px 16px 18px;
     grid-template-rows: 1fr auto;
+    overflow-x: clip;
   }
 
   .hero-content {
     width: 100%;
+    max-width: 100%;
     justify-content: center;
     padding-top: 0;
+    overflow-x: clip;
   }
 
   .hero-copy {
     width: 100%;
-    padding: 0 4px;
+    max-width: 100%;
+    padding: 0;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 }
 
@@ -2975,25 +2984,28 @@ section {
   .hero-headline {
     width: 100%;
     max-width: 100%;
-    font-size: clamp(44px, 15.8vw, 62px);
-    letter-spacing: -0.045em;
+    font-size: min(62px, calc((100svw - 48px) / 6));
+    letter-spacing: -0.048em;
     margin-bottom: 14px;
     line-height: 0.9;
-    padding: 0 6px;
+    padding: 0;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
   .hero-headline-line {
     white-space: nowrap;
     width: 100%;
+    max-width: 100%;
     text-align: center;
+    overflow-x: clip;
   }
 
   .hero-eyebrow {
     font-size: 8px;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     margin-bottom: 12px;
-    padding: 0 6px;
+    padding: 0 8px;
     line-height: 1.4;
     max-width: 100%;
     box-sizing: border-box;
@@ -3001,10 +3013,12 @@ section {
 
   .hero-intro {
     width: 100%;
-    padding: 0 6px;
+    max-width: 100%;
+    padding: 0 10px;
     margin-bottom: 16px;
     gap: 12px;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
   #hero .hero-subtitle {
@@ -3013,9 +3027,10 @@ section {
   }
 
   .hero-subtitle-select {
-    width: 100%;
-    max-width: 100%;
+    width: auto;
+    max-width: calc(100% - 4px);
     padding: 8px 10px;
+    margin-inline: auto;
     box-sizing: border-box;
   }
 
@@ -3026,7 +3041,8 @@ section {
 
   .hero-buttons {
     width: 100%;
-    padding: 0 6px;
+    max-width: 100%;
+    padding: 0 10px;
     box-sizing: border-box;
   }
 
@@ -3039,16 +3055,19 @@ section {
 
   .hero-footer {
     width: 100%;
-    padding: 10px 6px 0;
-    gap: 10px;
+    max-width: 100%;
+    padding: 10px 12px 0;
+    gap: 8px;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
   .hero-corner {
-    font-size: 8px;
-    letter-spacing: 0.1em;
-    line-height: 1.4;
-    max-width: 48%;
+    font-size: 7.5px;
+    letter-spacing: 0.05em;
+    line-height: 1.45;
+    max-width: 50%;
+    overflow-wrap: anywhere;
   }
 
   .site-nav-rail {
@@ -3079,22 +3098,21 @@ section {
 
 @media (max-width: 390px) {
   #hero {
-    padding: 100px 10px 14px;
+    padding: 100px 14px 14px;
   }
 
   .hero-headline {
-    font-size: clamp(40px, 16.2vw, 54px);
-    padding: 0 4px;
+    font-size: min(58px, calc((100svw - 40px) / 6));
   }
 
   .hero-eyebrow {
     font-size: 7px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     margin-bottom: 10px;
   }
 
   .hero-corner {
     font-size: 7px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
   }
 }
