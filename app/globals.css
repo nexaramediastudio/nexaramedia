@@ -67,30 +67,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Site-wide liquid background ───────────────────────── */
-.site-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.site-bg__base {
-  position: absolute;
-  inset: 0;
-  background: var(--color-bg);
-}
-
-.site-bg .liquid-ether-container {
-  position: absolute;
-  inset: 0;
-}
-
-body:has(.site-bg)::before {
-  display: none;
-}
-
 body::before {
   content: "";
   position: fixed;
@@ -2250,31 +2226,9 @@ section {
 
 /* ── Work (dark portfolio) ─────────────────────────────── */
 .work-section {
-  position: relative;
-  z-index: 2;
-  isolation: isolate;
   background: var(--color-dark);
   color: #fff;
   padding: var(--space-section) 32px 80px;
-  overflow: hidden;
-}
-
-.work-section-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--color-dark);
-  pointer-events: auto;
-}
-
-.work-section-inner {
-  position: relative;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.work-section-inner * {
-  pointer-events: auto;
 }
 
 .work-section .section-head {
@@ -2545,13 +2499,4 @@ section {
     gap: 12px;
     padding: 8px 16px;
   }
-}
-
-/* Liquid ether: full site except Featured Work (#work) */
-body:has(.site-bg) main > section:not(#work) {
-  background: transparent !important;
-}
-
-body:has(.site-bg) #work.work-section {
-  background: var(--color-dark) !important;
 }
